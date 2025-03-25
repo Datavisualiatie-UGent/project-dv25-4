@@ -30,9 +30,13 @@ toc: false
   <a href="#coffee-charts" class="cta-button">Explore Coffee Stats<span style="display: inline-block; margin-left: 0.25rem;">↓</span></a>
 </div>
 
+
 ```js
-const coffeeData = await FileAttachment("./data/coffeeDataset.csv").csv();
-const world = await FileAttachment("./data/world.json").json();
+const coffeeData = FileAttachment("./data/coffeeDataset.csv").csv();
+const world = FileAttachment("./data/world.json").json();
+```
+
+```js
 
 // Create a mapping of countries to their coordinates
 // This is a simplified mapping of country names to [longitude, latitude]
