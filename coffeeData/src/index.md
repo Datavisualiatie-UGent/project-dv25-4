@@ -30,64 +30,252 @@ toc: false
   <a href="#coffee-charts" class="cta-button">Explore Coffee Stats<span style="display: inline-block; margin-left: 0.25rem;">↓</span></a>
 </div>
 
-<div id="coffee-charts" class="grid grid-cols-2" style="grid-auto-rows: 504px;">
-  <div class="card">${
-    resize((width) => Plot.plot({
-      title: "Your awesomeness over time 🚀",
-      subtitle: "Up and to the right!",
-      width,
-      y: {grid: true, label: "Awesomeness"},
-      marks: [
-        Plot.ruleY([0]),
-        Plot.lineY(aapl, {x: "Date", y: "Close", tip: true})
-      ]
-    }))
-  }</div>
-  <div class="card">${
-    resize((width) => Plot.plot({
-      title: "How big are penguins, anyway? 🐧",
-      width,
-      grid: true,
-      x: {label: "Body mass (g)"},
-      y: {label: "Flipper length (mm)"},
-      color: {legend: true},
-      marks: [
-        Plot.linearRegressionY(penguins, {x: "body_mass_g", y: "flipper_length_mm", stroke: "species"}),
-        Plot.dot(penguins, {x: "body_mass_g", y: "flipper_length_mm", stroke: "species", tip: true})
-      ]
-    }))
-  }</div>
+```js
+const coffeeData = await FileAttachment("./data/coffeeDataset.csv").csv();
+const world = await FileAttachment("./data/world.json").json();
+
+// Create a mapping of countries to their coordinates
+// This is a simplified mapping of country names to [longitude, latitude]
+const countryCoordinates = {
+  "Brazil": [-55, -10],
+  "Colombia": [-74, 4],
+  "Costa Rica": [-84, 10],
+  "El Salvador": [-89, 14],
+  "Ethiopia": [38, 8],
+  "Guatemala": [-90, 15],
+  "Honduras": [-86, 15],
+  "Indonesia": [120, -5],
+  "Kenya": [38, 0],
+  "Laos": [105, 18],
+  "Madagascar": [47, -20],
+  "Mexico": [-102, 23],
+  "Myanmar": [96, 21],
+  "Nicaragua": [-85, 13],
+  "Panama": [-80, 9],
+  "Peru": [-76, -10],
+  "Taiwan": [121, 24],
+  "Tanzania, United Republic Of": [35, -6],
+  "Thailand": [101, 15],
+  "Uganda": [32, 1],
+  "United States (Hawaii)": [-155, 20],
+  "Vietnam": [108, 16]
+};
+
+// Process coffee data to get counts by country
+const countryCounts = {};
+coffeeData.forEach(d => {
+  const country = d["Country of Origin"];
+  if (country && countryCoordinates[country]) {
+    countryCounts[country] = (countryCounts[country] || 0) + 1;
+  }
+});
+
+// Create points data for the map
+const coffeePoints = Object.entries(countryCounts).map(([country, count]) => {
+  return {
+    country: country,
+    coordinates: countryCoordinates[country],
+    count: count
+  };
+});
+
+// Find min and max counts for color scaling
+const counts = coffeePoints.map(d => d.count);
+const minCount = Math.min(...counts);
+const maxCount = Math.max(...counts);
+
+// Create a better color scale function that handles outliers
+const getColorForCount = (count) => {
+  // Use a square root scale to compress the range
+  const t = Math.sqrt((count - minCount) / (maxCount - minCount));
+
+  return d3.interpolate("#e0d0c1", "#aa6122")(t);
+};
+
+let isGlobe = true;
+const worldView = Generators.observe((notify) => {
+  const clickHandler = (event) => {
+    if (event.target.id === "globe-toggle") {
+      isGlobe = true;
+      notify("orthographic");
+      event.target.classList.add("active");
+      const mapButton = document.getElementById("map-toggle");
+      mapButton.classList.remove("active");
+    } else if(event.target.id === "map-toggle") {
+      isGlobe = false;
+      event.target.classList.add("active");
+      const globeButton = document.getElementById("globe-toggle");
+      globeButton.classList.remove("active");
+      notify("equirectangular");
+    }
+  }
+  notify("orthographic");
+
+  document.addEventListener('click', clickHandler)
+
+  return () => {
+    document.removeEventListener('click', clickHandler);
+  }
+})
+
+const world_point = Generators.observe((notify) => {
+  let curr_pos = 0;
+  let isDragging = false;
+  let lastMouseX = 0;
+  let dragRotation = 0;
+
+  const removeInterv = setInterval(() => {
+   
+    const world = document.getElementById("world-map");
+    if (world && world.matches(':hover')) {
+    } else {
+       if (!isGlobe) return notify(0)
+      curr_pos -= 0.5;
+      notify(curr_pos);
+    }
+  }, 25);
+
+  const waitForWorldMap = setInterval(() => {
+    const world = document.getElementById("world-map");
+    if (world) {
+      clearInterval(waitForWorldMap);
+
+      world.addEventListener("mousedown", (e) => {
+        isDragging = true;
+        lastMouseX = e.clientX;
+        e.preventDefault();
+      });
+
+      world.addEventListener("touchstart", (e) => {
+        isDragging = true;
+        lastMouseX = e.touches[0].clientX;
+        e.preventDefault();
+      });
+    }
+  }, 100);
+
+
+  document.addEventListener("mousemove", (e) => {
+        if (isDragging) {
+          const deltaX = e.clientX - lastMouseX;
+          dragRotation += deltaX * 0.5; 
+          
+          lastMouseX = e.clientX;
+          curr_pos = dragRotation;
+          notify(curr_pos);
+        }
+      });
+
+      document.addEventListener("mouseup", () => {
+        isDragging = false;
+      });
+
+      document.addEventListener("mouseleave", () => {
+        isDragging = false;
+      });
+
+       document.addEventListener("touchmove", (e) => {
+        if (isDragging) {
+          const deltaX = e.touches[0].clientX - lastMouseX;
+          dragRotation += deltaX * 0.5;
+          lastMouseX = e.touches[0].clientX;
+          curr_pos = dragRotation;
+          notify(curr_pos);
+        }
+      });
+      document.addEventListener("touchend", () => {
+        isDragging = false;
+      });
+
+
+  notify(0);
+  return () => {
+    clearInterval(removeInterv);
+    const world = document.getElementById("world-map");
+    if (world) {
+      world.removeEventListener("mousedown", () => {});
+      world.removeEventListener("touchstart", () => {});
+    }
+    document.removeEventListener("mousemove", () => {});
+    document.removeEventListener("mouseup", () => {});
+    document.removeEventListener("mouseleave", () => {});
+    document.removeEventListener("touchmove", () => {});
+    document.removeEventListener("touchend", () => {});
+  };
+});
+```
+
+
+
+<div class="map-view-toggle">
+  <button id="globe-toggle" class="map-toggle-button active" data-view="globe">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+      <ellipse cx="12" cy="12" rx="10" ry="4" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M2 12H22" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M12 2V22" stroke="currentColor" stroke-width="1.5"/>
+    </svg>
+    Globe
+  </button>
+  <button id="map-toggle" class="map-toggle-button" data-view="flat">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="4" width="20" height="16" rx="1" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M2 8H22" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M2 16H22" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M8 4V20" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M16 4V20" stroke="currentColor" stroke-width="1.5"/>
+    </svg>
+    Map
+  </button>
 </div>
 
----
-
-## Next steps
-
-Here are some ideas of things you could try…
-
-<div class="grid grid-cols-4">
-  <div class="card">
-    Chart your own data using <a href="https://observablehq.com/framework/lib/plot"><code>Plot</code></a> and <a href="https://observablehq.com/framework/files"><code>FileAttachment</code></a>. Make it responsive using <a href="https://observablehq.com/framework/javascript#resize(render)"><code>resize</code></a>.
+<div class="visualization-container">
+  <div id="world-map">
+    <div>
+    ${
+      resize(async (width) => Plot.plot({
+          projection: {type: worldView, rotate: [world_point, 0]},
+          width: width,
+          height: width * 0.6,
+          margin: 0,
+          style: {
+            // Removing the backgroundColor for transparency
+            color: "#e0d0c1" // Lighter text color for dark theme
+          },
+          marks: [
+            Plot.geo(topojson.feature(world, world.objects.countries), { 
+              fill: "#e0d0c1", 
+              stroke: "#c19a6b", 
+              strokeWidth: 0.5,
+              fillOpacity: 0.3 // Reduced opacity for dark background
+            }),
+            Plot.dot(coffeePoints, {
+              x: d => d.coordinates[0],
+              y: d => d.coordinates[1],
+              r: d => d.count * 4 + 5, // Using sqrt for better scaling
+              fill: d => getColorForCount(d.count),
+              fillOpacity: 0.9, // Increased opacity for visibility
+              stroke: "#46301e",
+              strokeWidth: 1,
+              tip: true, // Simplified tooltip configuration
+              title: d => `${d.country}: ${d.count} samples`
+            }),
+            Plot.sphere({ stroke: "#c19a6b", strokeOpacity: 0.3 })
+          ]
+        })
+      )
+    }
+    </div>
   </div>
-  <div class="card">
-    Create a <a href="https://observablehq.com/framework/project-structure">new page</a> by adding a Markdown file (<code>whatever.md</code>) to the <code>src</code> folder.
-  </div>
-  <div class="card">
-    Add a drop-down menu using <a href="https://observablehq.com/framework/inputs/select"><code>Inputs.select</code></a> and use it to filter the data shown in a chart.
-  </div>
-  <div class="card">
-    Write a <a href="https://observablehq.com/framework/loaders">data loader</a> that queries a local database or API, generating a data snapshot on build.
-  </div>
-  <div class="card">
-    Import a <a href="https://observablehq.com/framework/imports">recommended library</a> from npm, such as <a href="https://observablehq.com/framework/lib/leaflet">Leaflet</a>, <a href="https://observablehq.com/framework/lib/dot">GraphViz</a>, <a href="https://observablehq.com/framework/lib/tex">TeX</a>, or <a href="https://observablehq.com/framework/lib/duckdb">DuckDB</a>.
-  </div>
-  <div class="card">
-    Ask for help, or share your work or ideas, on our <a href="https://github.com/observablehq/framework/discussions">GitHub discussions</a>.
-  </div>
-  <div class="card">
-    Visit <a href="https://github.com/observablehq/framework">Framework on GitHub</a> and give us a star. Or file an issue if you’ve found a bug!
+  
+  <div class="visualization-description">
+    <h3>Global Coffee Origins</h3>
+    <p>This map displays coffee samples. TODO add more text</p>
+    <p><em>You can rotate the globe by dragging or switch to a flat map view using the toggle buttons above.</em></p>
   </div>
 </div>
+
+
 
 <style>
 
@@ -259,4 +447,136 @@ Here are some ideas of things you could try…
   }
 }
 
+.map-view-toggle {
+  display: flex;
+  justify-content: center;
+  background: rgba(70, 48, 30, 0.2);
+  border-radius: 50px;
+  padding: 0.5rem;
+  margin: 2rem auto;
+  width: fit-content;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(193, 154, 107, 0.3);
+}
+
+.map-toggle-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0.5rem 1rem;
+  border: none;
+  background: transparent;
+  color: #e0d0c1;
+  border-radius: 50px;
+  cursor: pointer;
+  font-family: var(--sans-serif);
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.map-toggle-button:hover {
+  color: #fff;
+}
+
+.map-toggle-button.active {
+  background: #603813;
+  color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.map-toggle-button svg {
+  transition: all 0.3s ease;
+  pointer-events: none; /* Prevents the SVG from capturing the click event */
+}
+
+.map-toggle-button:hover svg {
+  transform: scale(1.1);
+}
+
+/* Visualization description styles */
+.visualization-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.visualization-description {
+  background: rgba(70, 48, 30, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid rgba(193, 154, 107, 0.3);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.visualization-description h3 {
+  color: #c19a6b;
+  font-size: 1.5rem;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.visualization-description p, 
+.visualization-description ul {
+  color: var(--theme-foreground);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.visualization-description ul {
+  padding-left: 1.5rem;
+}
+
+.visualization-description li {
+  margin-bottom: 0.5rem;
+}
+
+.visualization-description em {
+  color: var(--theme-foreground-muted);
+}
+
+#world-map {
+  cursor: grab;
+}
+
+/* Responsive layout for larger screens */
+@media (min-width: 768px) {
+  .visualization-container {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  
+  #world-map {
+    flex: 2;
+  }
+  
+  .visualization-description {
+    flex: 1;
+    max-width: 350px;
+    position: sticky;
+    top: 2rem;
+  }
+}
 </style>
+
+<script>
+// Fix toggle button click behavior
+document.addEventListener('DOMContentLoaded', () => {
+  const toggleButtons = document.querySelectorAll('.map-toggle-button');
+  
+  toggleButtons.forEach(button => {
+    button.addEventListener('click', function(e) {
+      // This will work regardless of whether the SVG or button itself is clicked
+      document.querySelectorAll('.map-toggle-button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      this.classList.add('active');
+    });
+  });
+});
+</script>
