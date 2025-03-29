@@ -26,7 +26,7 @@ toc: false
     </svg>
   </div>
   <h1>CoffeeData</h1>
-  <h2>Exploring coffee statistics across the globe - production, consumption, and trends in different regions</h2>
+  <h2>Exploring coffee statistics across the globe - coffee quality in different regions</h2>
   <a href="#coffee-charts" class="cta-button">Explore Coffee Stats<span style="display: inline-block; margin-left: 0.25rem;">↓</span></a>
 </div>
 
@@ -65,38 +65,48 @@ const countryCoordinates = {
   "Vietnam": [108, 16]
 };
 
-// Process coffee data to get counts by country
+const qualityPoints = coffeeData.map(d =>( {altitude:parseFloat(d.Altitude), cupPoints: parseFloat(d["Total Cup Points"])}))
+
 const countryCounts = {};
 coffeeData.forEach(d => {
   const country = d["Country of Origin"];
   if (country && countryCoordinates[country]) {
-    countryCounts[country] = (countryCounts[country] || 0) + 1;
+    countryCounts[country] ??= {
+      count: 0,
+      
+    }
+
+    countryCounts[country].count++
+  } else {
+    console.warn(`Country not found in coordinates mapping: ${country}`);
   }
 });
 
-// Create points data for the map
+
 const coffeePoints = Object.entries(countryCounts).map(([country, count]) => {
   return {
     country: country,
     coordinates: countryCoordinates[country],
-    count: count
+    count: count.count
   };
 });
 
-// Find min and max counts for color scaling
+
 const counts = coffeePoints.map(d => d.count);
 const minCount = Math.min(...counts);
 const maxCount = Math.max(...counts);
 
-// Create a better color scale function that handles outliers
+
 const getColorForCount = (count) => {
-  // Use a square root scale to compress the range
   const t = Math.sqrt((count - minCount) / (maxCount - minCount));
 
-  return d3.interpolate("#e0d0c1", "#aa6122")(t);
+  // Using a more distinct and vibrant color range for better visibility
+  return d3.interpolate("#ffe4b5", "#d2691e")(t); // Lighter gradient from moccasin to chocolate
 };
 
-let isGlobe = true;
+
+
+let isGlobe = false
 const worldView = Generators.observe((notify) => {
   const clickHandler = (event) => {
     if (event.target.id === "globe-toggle") {
@@ -113,7 +123,7 @@ const worldView = Generators.observe((notify) => {
       notify("equirectangular");
     }
   }
-  notify("orthographic");
+  notify("equirectangular");
 
   document.addEventListener('click', clickHandler)
 
@@ -123,73 +133,80 @@ const worldView = Generators.observe((notify) => {
 })
 
 const world_point = Generators.observe((notify) => {
-  let curr_pos = 0;
-  let isDragging = false;
-  let lastMouseX = 0;
-  let dragRotation = 0;
+    let curr_pos = 0;
+    let isDragging = false;
+    let lastMouseX = 0;
+    let dragRotation = 0;
 
-  const removeInterv = setInterval(() => {
-   
+    const removeInterv = setInterval(() => {
+    
     const world = document.getElementById("world-map");
-    if (world && world.matches(':hover')) {
-    } else {
-       if (!isGlobe) return notify(0)
-      curr_pos -= 0.5;
-      notify(curr_pos);
-    }
-  }, 25);
-
-  const waitForWorldMap = setInterval(() => {
-    const world = document.getElementById("world-map");
-    if (world) {
-      clearInterval(waitForWorldMap);
-
-      world.addEventListener("mousedown", (e) => {
+      if (world && world.matches(':hover')) {
+      } else {
+        if (!isGlobe) return notify(0)
+        curr_pos -= 0.5;
+        notify(curr_pos);
+      }
+    }, 25);
+    const movedownHandler = (e) => {
         isDragging = true;
         lastMouseX = e.clientX;
         e.preventDefault();
-      });
+      }
 
-      world.addEventListener("touchstart", (e) => {
-        isDragging = true;
-        lastMouseX = e.touches[0].clientX;
-        e.preventDefault();
-      });
+    const touchStartHandler = (e) => {
+      isDragging = true;
+      lastMouseX = e.touches[0].clientX;
+      e.preventDefault();
     }
-  }, 100);
+
+    const waitForWorldMap = setInterval(() => {
+      const world = document.getElementById("world-map");
+      if (world) {
+        clearInterval(waitForWorldMap);
+
+        world.addEventListener("mousedown",movedownHandler);
+
+        world.addEventListener("touchstart", touchStartHandler);
+      }
+    }, 100);
+
+    const touchmoveHandler = (e) => {
+      if (isDragging) {
+        const deltaX = e.touches[0].clientX - lastMouseX;
+        dragRotation += deltaX * 0.5;
+        lastMouseX = e.touches[0].clientX;
+        curr_pos = dragRotation;
+        notify(curr_pos);
+      }
+    }
 
 
-  document.addEventListener("mousemove", (e) => {
-        if (isDragging) {
-          const deltaX = e.clientX - lastMouseX;
-          dragRotation += deltaX * 0.5; 
-          
-          lastMouseX = e.clientX;
-          curr_pos = dragRotation;
-          notify(curr_pos);
-        }
-      });
+    const mousemoveHandler = (e) => {
+      if (isDragging) {
+        const deltaX = e.clientX - lastMouseX;
+        dragRotation += deltaX * 0.5; 
+        
+        lastMouseX = e.clientX;
+        curr_pos = dragRotation;
+        notify(curr_pos);
+      }
+    }
 
-      document.addEventListener("mouseup", () => {
-        isDragging = false;
-      });
+    const mouseupHandler = () => {
+      isDragging = false;
+    }
+  
+    document.addEventListener("mousemove", mousemoveHandler);
 
-      document.addEventListener("mouseleave", () => {
-        isDragging = false;
-      });
+    document.addEventListener("mouseup", mouseupHandler);
 
-       document.addEventListener("touchmove", (e) => {
-        if (isDragging) {
-          const deltaX = e.touches[0].clientX - lastMouseX;
-          dragRotation += deltaX * 0.5;
-          lastMouseX = e.touches[0].clientX;
-          curr_pos = dragRotation;
-          notify(curr_pos);
-        }
-      });
-      document.addEventListener("touchend", () => {
-        isDragging = false;
-      });
+    document.addEventListener("mouseleave", mouseupHandler);
+
+
+
+    document.addEventListener("touchmove",touchmoveHandler );
+    document.addEventListener("touchend", mouseupHandler);
 
 
   notify(0);
@@ -197,31 +214,23 @@ const world_point = Generators.observe((notify) => {
     clearInterval(removeInterv);
     const world = document.getElementById("world-map");
     if (world) {
-      world.removeEventListener("mousedown", () => {});
-      world.removeEventListener("touchstart", () => {});
+      world.removeEventListener("mousedown", movedownHandler);
+      world.removeEventListener("touchstart",touchStartHandler);
     }
-    document.removeEventListener("mousemove", () => {});
-    document.removeEventListener("mouseup", () => {});
-    document.removeEventListener("mouseleave", () => {});
-    document.removeEventListener("touchmove", () => {});
-    document.removeEventListener("touchend", () => {});
+    document.removeEventListener("mousemove", mousemoveHandler);
+    document.removeEventListener("mouseup", mouseupHandler);
+    document.removeEventListener("mouseleave", mouseupHandler);
+    document.removeEventListener("touchmove", touchmoveHandler);
+    document.removeEventListener("touchend", mouseupHandler);
   };
 });
+console.log(coffeePoints)
 ```
 
 
 
 <div class="map-view-toggle">
-  <button id="globe-toggle" class="map-toggle-button active" data-view="globe">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
-      <ellipse cx="12" cy="12" rx="10" ry="4" stroke="currentColor" stroke-width="1.5"/>
-      <path d="M2 12H22" stroke="currentColor" stroke-width="1.5"/>
-      <path d="M12 2V22" stroke="currentColor" stroke-width="1.5"/>
-    </svg>
-    Globe
-  </button>
-  <button id="map-toggle" class="map-toggle-button" data-view="flat">
+  <button id="map-toggle" class="map-toggle-button active" data-view="flat">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect x="2" y="4" width="20" height="16" rx="1" stroke="currentColor" stroke-width="1.5"/>
       <path d="M2 8H22" stroke="currentColor" stroke-width="1.5"/>
@@ -230,6 +239,15 @@ const world_point = Generators.observe((notify) => {
       <path d="M16 4V20" stroke="currentColor" stroke-width="1.5"/>
     </svg>
     Map
+  </button>
+  <button id="globe-toggle" class="map-toggle-button " data-view="globe">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+      <ellipse cx="12" cy="12" rx="10" ry="4" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M2 12H22" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M12 2V22" stroke="currentColor" stroke-width="1.5"/>
+    </svg>
+    Globe
   </button>
 </div>
 
@@ -273,12 +291,50 @@ const world_point = Generators.observe((notify) => {
   </div>
   
   <div class="visualization-description">
-    <h3>Global Coffee Origins</h3>
-    <p>This map displays coffee samples. TODO add more text</p>
-    <p><em>You can rotate the globe by dragging or switch to a flat map view using the toggle buttons above.</em></p>
+    <h3 class="card-title">Global Coffee Origins</h3>
+    <p>
+      We observe the global diversity of coffee production, with samples sourced from over 20 countries. The data shows the geographical spread of coffee cultivation, from traditional producers like Colombia, Ethiopia, and Brazil to regions such as Taiwan and Laos. The data shows that most of the coffee is produced near the equator, where the climate is ideal for coffee cultivation.
+    </p>
+    ${worldView === "orthographic" ? html`<p><em>You can rotate the globe by dragging or switch to a 2D map view using the toggle buttons above.</em></p>`: ""}
   </div>
 </div>
 
+
+<div class="card">
+<div >
+
+  <h3  class="card-title">Coffee quality and height</h3>
+</div>
+  TODO... Continue work on this
+  <div>
+    <div>
+      ${
+        resize(async (width) => Plot.plot({
+          width: width,
+          height: width * 0.6,
+                    marks: [
+                    Plot.dot(qualityPoints, {
+                    x: d => d.cupPoints,
+                    y: d => d.altitude,
+                    fill: d => "#aa6122",
+                    fillOpacity: 0.9,
+                    stroke: "#46301e",
+                    strokeWidth: 1,
+                    tip: true,
+                    title: d => `Altitude of ${d.altitude} meter\n${d.cupPoints} total cup points`
+                    }),
+                    Plot.linearRegressionY(qualityPoints, {
+                    x: d => d.cupPoints,
+                    y: d => d.altitude,
+                    stroke: "#c19a6b", // Subtle coffee-themed color
+                    strokeWidth: 2.5, // Slightly thinner line for balance
+                    strokeOpacity: 0.8, // Softer opacity for blending
+                    label: "Trend Line"
+                    })
+                    ],    }))    }
+    </div>
+  </div>
+</div>
 
 
 <style>
@@ -516,7 +572,7 @@ const world_point = Generators.observe((notify) => {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.visualization-description h3 {
+h3, .card-title {
   color: #c19a6b;
   font-size: 1.5rem;
   margin-top: 0;
@@ -524,8 +580,7 @@ const world_point = Generators.observe((notify) => {
   font-weight: 700;
 }
 
-.visualization-description p, 
-.visualization-description ul {
+p, ul {
   color: var(--theme-foreground);
   font-size: 1rem;
   line-height: 1.6;
@@ -548,6 +603,10 @@ const world_point = Generators.observe((notify) => {
   cursor: grab;
 }
 
+#world-map:active {
+  cursor: grabbing;
+} 
+
 /* Responsive layout for larger screens */
 @media (min-width: 768px) {
   .visualization-container {
@@ -568,19 +627,3 @@ const world_point = Generators.observe((notify) => {
 }
 </style>
 
-<script>
-// Fix toggle button click behavior
-document.addEventListener('DOMContentLoaded', () => {
-  const toggleButtons = document.querySelectorAll('.map-toggle-button');
-  
-  toggleButtons.forEach(button => {
-    button.addEventListener('click', function(e) {
-      // This will work regardless of whether the SVG or button itself is clicked
-      document.querySelectorAll('.map-toggle-button').forEach(btn => {
-        btn.classList.remove('active');
-      });
-      this.classList.add('active');
-    });
-  });
-});
-</script>
