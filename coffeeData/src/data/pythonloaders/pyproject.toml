@@ -1,0 +1,27 @@
+[project]
+name = "dataloaders"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Ben De Meurichy",email = "48103261+Bendemeurichy@users.noreply.github.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "numpy (>=2.2.4,<3.0.0)",
+    "pandas (>=2.2.3,<3.0.0)",
+    "bs4 (>=0.0.2,<0.0.3)",
+    "selenium (>=4.30.0,<5.0.0)",
+    "lxml (>=5.3.1,<6.0.0)",
+    "webdriver-manager (>=4.0.2,<5.0.0)",
+    "jupyter (>=1.1.1,<2.0.0)",
+    "fastparquet (>=2024.11.0,<2025.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+package-mode = false
