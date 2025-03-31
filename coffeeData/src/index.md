@@ -427,7 +427,7 @@ console.log("Filtered data:", filteredData);
   <div class="visualization-description">
     <h3 class="card-title">Global Coffee Origins</h3>
     <p>
-      We observe the global diversity of coffee production, with samples sourced from over 20 countries. The data shows the geographical spread of coffee cultivation, from traditional producers like Colombia, Ethiopia, and Brazil to regions such as Taiwan and Laos. The data shows that most of the coffee is produced near the equator, where the climate is ideal for coffee cultivation.
+      We observe the global diversity of coffee production, with samples sourced from over 20 countries. The data shows the geographical spread of coffee cultivation, from traditional producers like Colombia, Ethiopia, and Brazil to regions such as Taiwan and Laos. The data shows that most of the coffee is produced near the equator, where the climate is ideal for coffee cultivation. ...
     </p>
     ${worldView === "orthographic" ? html`<p><em>You can rotate the globe by dragging or switch to a 2D map view using the toggle buttons above.</em></p>`: ""}
   </div>
@@ -436,36 +436,62 @@ console.log("Filtered data:", filteredData);
 <div class="card">
 <div >
 
-  <h3  class="card-title">Coffee quality and height</h3>
+  <h3  class="card-title">Coffee quality and altitude</h3>
 </div>
   TODO... Continue work on this
   <div>
+  <br/>
     <div>
       ${
-        resize(async (width) => Plot.plot({
-          width: width,
-          height: width * 0.6,
-                    marks: [
-                    Plot.dot(qualityPoints, {
-                    x: d => d.cupPoints,
-                    y: d => d.altitude,
-                    fill: d => "#aa6122",
-                    fillOpacity: 0.9,
-                    stroke: "#46301e",
-                    strokeWidth: 1,
-                    tip: true,
-                    title: d => `Altitude of ${d.altitude} meter\n${d.cupPoints} total cup points`
-                    }),
-                    Plot.linearRegressionY(qualityPoints, {
-                    x: d => d.cupPoints,
-                    y: d => d.altitude,
-                    stroke: "#c19a6b", // Subtle coffee-themed color
-                    strokeWidth: 2.5, // Slightly thinner line for balance
-                    strokeOpacity: 0.8, // Softer opacity for blending
-                    label: "Trend Line"
-                    })
-                    ],    }))    }
-    </div>
+           resize(async (width) => Plot.plot({
+            width: width,
+            height: width * 0.6,
+            margin: 60, // Added margin to prevent labels from being cut off
+            x: {
+          label: "Quality Score",
+          grid: true,
+          tickFormat: "d",
+          labelOffset: 35,
+          fontSize: 14,
+          fontWeight: "bold"
+            },
+            y: {
+          label: "Altitude (meters)",
+          grid: true,
+          labelOffset: [-100,45],
+          fontSize: 14,
+          fontWeight: "bold"
+            },
+            color: {
+          legend: true
+            },
+            style: {
+          fontSize: 12 // Increases size of tick labels
+            },
+            marks: [
+          Plot.dot(qualityPoints, {
+            x: d => d.cupPoints,
+            y: d => d.altitude,
+            fill: "#aa6122",
+            fillOpacity: 0.9,
+            stroke: "#46301e",
+            strokeWidth: 1,
+            tip: true,
+            title: d => `Altitude: ${d.altitude} meters\nCup Points: ${d.cupPoints}`
+          }),
+          Plot.linearRegressionY(qualityPoints, {
+            x: d => d.cupPoints,
+            y: d => d.altitude,
+            stroke: "#c19a6b", // Subtle coffee-themed color
+            strokeWidth: 2.5, // Slightly thinner line for balance
+            strokeOpacity: 0.8, // Softer opacity for blending
+            label: "Trend Line"
+          })
+            ],   
+            caption: "Relationship between coffee quality scores and altitude" 
+           }))
+          }
+        </div>
   </div>
 </div>
 
