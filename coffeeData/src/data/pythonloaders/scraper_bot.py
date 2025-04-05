@@ -47,15 +47,15 @@ driver.find_element("link text", "Arabica Coffees").click()
 time.sleep(3)
 
 # these values can be changed if this breaks midway through collecting data to pick up close to where you left off
-page = 8
-coffeenum = 358
+page = 7
+coffeenum = 350
 
 while True:
     print("page {}".format(page))
 
     # 50 rows in these tables * 7 columns per row = 350 cells. Every 7th cell clicks through to that coffee's data page
-    for i in range(1, 400, 8):
-        time.sleep(2)
+    for i in range(1, 450, 8):
+        time.sleep(3)
 
         # paginate back to the desired page number
         # don't think there's a way around this - the back() option goes too far back
@@ -63,7 +63,7 @@ while True:
         for p_num in range(page):
             page_buttons = driver.find_elements("class name", "paginate_button")
             page_buttons[-1].click()  # the 'next' button
-            time.sleep(1)
+            time.sleep(2)
             page_buttons = driver.find_elements("class name", "paginate_button")
 
         # select the cell to click through to the next coffee-data page

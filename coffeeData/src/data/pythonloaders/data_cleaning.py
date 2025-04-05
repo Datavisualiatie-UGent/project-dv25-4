@@ -1,79 +1,42 @@
 import os
+
 import pandas as pd
 import numpy as np
 
+df = pd.read_parquet("df_1_arabica.parquet")
+df.info()
 
-def safe_numeric_conversion(series, split_char=" ", position=0):
-    """Extract numeric values from strings and convert to float."""
-    try:
-        # Extract the numeric part and convert to float
-        # Fix: str.split() takes 1-2 positional args, but 'expand' must be a keyword arg
-        numeric_values = series.str.split(split_char, n=1, expand=True)[position]
-        return pd.to_numeric(numeric_values, errors="coerce")
-    except (AttributeError, KeyError, ValueError) as e:
-        print(f"Error converting values: {e}")
-        return series
+# remove double rows
+df.drop_duplicates(inplace=True)
+df.reset_index(drop=True, inplace=True)
 
+df.rename(
+    columns={"index": "ID"}, inplace=True
+)  # changing the uninformative first column to ID
+df["ID"] = pd.Series(range(df.shape[0]))  # assigning the ID numbers
 
-def clean_coffee_data(input_path, output_path):
-    """Clean the coffee dataset and save the results."""
-    # Check if input file exists
-    if not os.path.exists(input_path):
-        print(f"Error: Input file {input_path} not found.")
-        return False
+df.drop("NA", axis="columns", inplace=True)  # dropping the NA columns. It's just NA.
 
-    print(f"Reading data from {input_path}")
-    df = pd.read_parquet(input_path)
-    print("Original data info:")
-    df.info()
+df["Color"] = df["Color"].str.lower()  # for consistent wording
 
-    # Rename and set ID column
-    df.rename(columns={df.columns[0]: "ID"}, inplace=True)
-    df["ID"] = pd.Series(range(df.shape[0]))
+df["Category One Defects"] = df["Category One Defects"].str.split(
+    pat=" ", n=1, expand=True
+)[
+    0
+]  # only numeric values
+df["Category Two Defects"] = df["Category Two Defects"].str.split(
+    pat=" ", n=1, expand=True
+)[
+    0
+]  # only numeric values
 
-    # Drop NA column if it exists
-    if "NA" in df.columns:
-        df.drop("NA", axis="columns", inplace=True)
+df.rename(
+    columns={"Moisture": "Moisture Percentage"}, inplace=True
+)  # this variable is in percentage, changing the name
+df["Moisture Percentage"] = df["Moisture Percentage"].str.split(
+    pat=" ", n=1, expand=True
+)[
+    0
+]  # only numeric values
 
-    # Standardize color values if column exists
-    if "Color" in df.columns:
-        df["Color"] = df["Color"].str.lower()
-
-    # Convert defect columns to numeric
-    for column in ["Category One Defects", "Category Two Defects"]:
-        if column in df.columns:
-            df[column] = safe_numeric_conversion(df[column])
-
-    # Rename and convert moisture column
-    if "Moisture" in df.columns:
-        df.rename(columns={"Moisture": "Moisture Percentage"}, inplace=True)
-        df["Moisture Percentage"] = safe_numeric_conversion(df["Moisture Percentage"])
-
-    print("Cleaned data info:")
-    df.info()
-
-    # Create directory if it doesn't exist
-    output_dir = os.path.dirname(output_path)
-    if output_dir and not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-
-    # Save cleaned data
-    df.to_parquet(output_path)
-    print(f"Cleaned data saved to {output_path}")
-    return True
-
-
-if __name__ == "__main__":
-    # Define input and output paths (use absolute paths or ensure relative paths work)
-    input_file = os.path.join(
-        os.path.dirname(__file__),
-        ".",
-        "df_1_arabica.parquet",
-    )
-    output_file = os.path.join(
-        os.path.dirname(__file__),
-        ".",
-        "df_arabica_clean.parquet",
-    )
-
-    clean_coffee_data(input_file, output_file)
+df.to_parquet("df_arabica_clean.parquet")

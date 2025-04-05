@@ -1,182 +1,175 @@
 import pandas as pd
 import numpy as np
 import os
-import logging
-from pathlib import Path
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
-logger = logging.getLogger(__name__)
+# There must be 5 tables for each coffee. Some of them skipped and could not scrape the tables.
+# Might be a slow loading of the page and missed the click on coffee ID link.
 
+# all the files from working directory:
+dir = pd.DataFrame({"files": os.listdir()})
 
-def get_coffee_files():
-    """Get list of coffee files and analyze which ones are complete."""
-    # List files in working directory
-    dir_files = pd.DataFrame({"files": os.listdir()})
+# only the files we scraped from the database
+coffee_list = dir[dir["files"].str.contains("coffee")].reset_index(drop=True)
 
-    # Filter coffee files
-    coffee_list = dir_files[dir_files["files"].str.contains("coffee")].reset_index(
-        drop=True
-    )
+# splitting the file names so we can see the table names
+coffee_list_split_temp = coffee_list["files"].str.split(pat="_", n=2, expand=True)
+col1 = coffee_list_split_temp[0] + "_" + coffee_list_split_temp[1]
 
-    # Split file names to extract coffee IDs and table names
-    # FIX: Use named parameter 'n' instead of positional parameter
-    coffee_list_split_temp = coffee_list["files"].str.split("_", n=2, expand=True)
-    col1 = coffee_list_split_temp[0] + "_" + coffee_list_split_temp[1]
-    coffee_list_split = pd.DataFrame(
-        {"coffee": col1, "tables": coffee_list_split_temp[2]}
-    )
+coffee_list_split = pd.DataFrame({"coffee": col1, "tables": coffee_list_split_temp[2]})
 
-    # Check which coffees don't have all 5 tables
-    table_counts = coffee_list_split.groupby("coffee").count()
-    incomplete_coffees = table_counts[table_counts["tables"] != 5]
-    logger.info(f"Found {len(incomplete_coffees)} coffees with incomplete tables:")
-    logger.info(incomplete_coffees)
+# see which coffees do not have 5 tables
+table_counts = coffee_list_split.groupby("coffee").count()
+print(table_counts[table_counts["tables"] != 5])
 
-    # Extract coffee IDs from incomplete_coffees
-    incomplete_ids = []
-    for coffee in incomplete_coffees.index:
-        try:
-            coffee_id = int(coffee.split("_")[1])
-            incomplete_ids.append(coffee_id)
-        except (ValueError, IndexError):
-            logger.warning(f"Could not parse coffee ID from {coffee}")
+# They are coffee_135, coffee_185 and coffee_85
+# Seems like the program could not click on coffee id and saved the outer table.
+# This might change from case to case but if you follow the same steps you can replicate with yours
 
-    return incomplete_ids
+# we can skip these coffee numbers and gather other tables.
 
+df_list = []
+# 87 turned out weird, figure out what happened here
+skips = [112,130,143,162,208,224,351,354,361,373,390]
+scrapesize = 390
 
-def process_coffee_tables(coffee_id):
-    """Process tables for a single coffee ID and return a consolidated dataframe."""
-    try:
-        # Check if all required files exist first
-        required_files = [f"coffee_{coffee_id}_table_{i}.csv" for i in range(5)]
-        if not all(os.path.exists(file) for file in required_files):
-            missing_files = [
-                file for file in required_files if not os.path.exists(file)
-            ]
-            logger.warning(
-                f"Skipping coffee {coffee_id} due to missing files: {missing_files}"
-            )
-            return None
+for i in range(scrapesize):
+    if i in skips:
+        print("skipping {}".format(i))
+        pass
+    else:
+        df0 = pd.read_csv("coffee_{}_table_0.csv".format(i))
+        df1 = pd.read_csv("coffee_{}_table_1.csv".format(i))
+        df2 = pd.read_csv("coffee_{}_table_2.csv".format(i))
+        df3 = pd.read_csv("coffee_{}_table_3.csv".format(i))
+        df4 = pd.read_csv("coffee_{}_table_4.csv".format(i))
 
-        # Read all tables
-        df0 = pd.read_csv(f"coffee_{coffee_id}_table_0.csv")
-        df1 = pd.read_csv(f"coffee_{coffee_id}_table_1.csv")
-        df2 = pd.read_csv(f"coffee_{coffee_id}_table_2.csv")
-        df3 = pd.read_csv(f"coffee_{coffee_id}_table_3.csv")
-        df4 = pd.read_csv(f"coffee_{coffee_id}_table_4.csv")
+        # df0: on the website, this table is used for links. Irrelevant for our aim so skipping this one.
+        """
+		   Unnamed: 0                             89.33
+		0         NaN             Q Arabica Certificate
+		1         NaN                  Embeddable Image
+		2         NaN  Cupping Protocol and Descriptors
+		3         NaN       View Green Analysis Details
+		4         NaN                  Request a Sample
+		5         NaN                   Species Arabica
+		6         NaN        Owner Coffee Quality Union
+		"""
 
-        # Process table 1
+        # df1
+        """
+		   Unnamed: 0                  0                      1                   2  \
+		0           0  Country of Origin               Colombia      Number of Bags   
+		1           1          Farm Name       Finca El Paraiso          Bag Weight   
+		2           2         Lot Number             CQU2022015  In-Country Partner   
+		3           3               Mill       Finca El Paraiso        Harvest Year   
+		4           4         ICO Number                    NaN        Grading Date   
+		5           5            Company   Coffee Quality Union               Owner   
+		6           6           Altitude              1700-1930             Variety   
+		7           7             Region         Piendamo,Cauca              Status   
+		8           8           Producer  Diego Samuel Bermudez   Processing Method   
+								 3  
+		0                        1  
+		1                    35 kg  
+		2    Japan Coffee Exchange  
+		3              2021 / 2022  
+		4     September 21st, 2022  
+		5     Coffee Quality Union  
+		6                 Castillo    
+		"""
         df1.columns = ["zero", "one", "two", "three", "four"]
         colnames1 = df1["one"].tolist()
         colnames2 = df1["three"].tolist()
         data1 = df1["two"].tolist()
         data2 = df1["four"].tolist()
+
         df1_processed = pd.DataFrame([data1 + data2], columns=(colnames1 + colnames2))
 
-        # Process table 2
+        # df2: The cupping scores are stored in this table
+        """
+		  Unnamed: 0           0     1                 2      3
+		0           0       Aroma  8.58        Uniformity  10.00
+		1           1      Flavor  8.50         Clean Cup  10.00
+		2           2  Aftertaste  8.42         Sweetness  10.00
+		3           3     Acidity  8.58           Overall   8.58
+		4           4        Body  8.25           Defects   0.00
+		5           5     Balance  8.42  Total Cup Points  89.33
+		"""
         df2.columns = ["zero", "one", "two", "three", "four"]
         colnames1 = df2["one"].tolist()
         colnames2 = df2["three"].tolist()
         data1 = df2["two"].tolist()
         data2 = df2["four"].tolist()
+
         df2_processed = pd.DataFrame([data1 + data2], columns=(colnames1 + colnames2))
 
-        # Process table 3
+        # df3
+        """
+		   Unnamed: 0                     0               1                     2  \
+		0           0              Moisture          11.8 %                 Color   
+		1           1  Category One Defects  0 full defects  Category Two Defects   
+		2           2               Quakers               0                   NaN   
+						3  
+		0           Green  
+		1  3 full defects  
+		2             NaN    
+		"""
+
         df3.columns = ["zero", "one", "two", "three", "four"]
         colnames1 = df3["one"].tolist()
         colnames2 = df3["three"].tolist()
         data1 = df3["two"].tolist()
         data2 = df3["four"].tolist()
+
         df3_processed = pd.DataFrame([data1 + data2], columns=(colnames1 + colnames2))
 
-        # Process table 4
+        # df4
+        """
+		   Unnamed: 0                      0  \
+		0           0             Expiration   
+		1           1     Certification Body   
+		2           2  Certification Address   
+		3           3  Certification Contact   
+														   1  
+		0                               September 21st, 2023  
+		1                              Japan Coffee Exchange  
+		2  〒413-0002 静岡県熱海市伊豆山１１７３−５８ 1173-58 Izusan, Ata...  
+		3            松澤　宏樹　Koju Matsuzawa - +81(0)9085642901    
+		"""
+
         df4.columns = ["zero", "one", "two"]
         colnames1 = df4["one"].tolist()
         data1 = df4["two"].tolist()
-        df4_processed = pd.DataFrame([data1], columns=colnames1)
 
-        # Combine all tables
+        if i > 1:
+            prev_cols = df.columns  # cols before replacing df with next coffee
+
+        df4_processed = pd.DataFrame([data1], columns=colnames1)
         df = pd.concat(
-            [df1_processed, df2_processed, df3_processed, df4_processed], axis=1
+            objs=[df1_processed, df2_processed, df3_processed, df4_processed], axis=1
         )
         df = df.rename(columns={np.nan: "NA"})
+        df_list.append(df)
+        print(i)
 
-        # Add coffee ID as a column
-        df["coffee_id"] = coffee_id
+        these_cols = df.columns
 
-        return df
-
-    except Exception as e:
-        logger.error(f"Error processing coffee {coffee_id}: {str(e)}")
-        return None
-
-
-def main(output_file="df_1_arabica.parquet", max_coffee_id=362):
-    """Main function to process all coffee tables and save to parquet."""
-    logger.info("Starting coffee data processing")
-
-    # Get list of known incomplete coffees
-    known_skips = get_coffee_files()
-
-    # Add coffees that are known to be problematic from comments
-    problem_coffees = [85, 87, 135, 185]
-    for coffee_id in problem_coffees:
-        if coffee_id not in known_skips:
-            known_skips.append(coffee_id)
-
-    logger.info(f"Will skip the following coffee IDs: {sorted(known_skips)}")
-
-    # Process each coffee file
-    df_list = []
-    processed_count = 0
-    skipped_count = 0
-
-    for i in range(max_coffee_id):
-        if i in known_skips:
-            logger.info(f"Skipping coffee {i} (known issue)")
-            skipped_count += 1
-            continue
-
-        df = process_coffee_tables(i)
-        if df is not None:
-            df_list.append(df)
-            processed_count += 1
-            if processed_count % 10 == 0:
-                logger.info(f"Processed {processed_count} coffees so far...")
-        else:
-            skipped_count += 1
-
-    logger.info(
-        f"Processing complete. Processed: {processed_count}, Skipped: {skipped_count}"
-    )
-
-    # Check if we have any data to save
-    if not df_list:
-        logger.error(
-            "No coffee data was successfully processed. Cannot create output file."
-        )
-        return
-
-    # Combine all processed coffees and save
-    try:
-        df_final = pd.concat(df_list, axis=0, ignore_index=True)
-        logger.info(f"Final dataframe shape: {df_final.shape}")
-        logger.info(f"Final dataframe columns: {df_final.columns.tolist()}")
-
-        # Save to parquet file
-        df_final.to_parquet(output_file)
-        logger.info(f"Data successfully saved to {output_file}")
-
-        # Display sample of the data
-        logger.info("Sample of processed data:")
-        logger.info(df_final.head())
-
-    except Exception as e:
-        logger.error(f"Error saving final dataframe: {str(e)}")
+        # are the columns matching across coffees?
+        if i > 1:
+            # figuring out where the column mismatches are
+            # print(these_cols==prev_cols)
+            # print(these_cols)
+            # print(prev_cols)
+            pass
 
 
-if __name__ == "__main__":
-    main()
+j = 0
+for i in df_list:
+    print("{} shape: {}".format(j, i.shape))
+    j += 1
+# df_list stores all the dataframes. Each data frame is in 1 row 40 column shape
+
+df_final = pd.concat(objs=df_list, axis=0)
+print(df_final.columns)
+print(df_final.shape)
+print(df_final.head())
+df_final.to_parquet("df_1_arabica.parquet")
