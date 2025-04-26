@@ -398,9 +398,9 @@ console.log("Filtered data:", filteredData);
             color: "#e0d0c1" // Lighter text color for dark theme
           },
           marks: [
-            Plot.geo(topojson.feature(world, world.objects.countries), { 
-              fill: "#e0d0c1", 
-              stroke: "#c19a6b", 
+            Plot.geo(topojson.feature(world, world.objects.countries), {
+              fill: "#e0d0c1",
+              stroke: "#c19a6b",
               strokeWidth: 0.5,
               fillOpacity: 0.3 // Reduced opacity for dark background
             }),
@@ -468,14 +468,14 @@ console.log("Filtered data:", filteredData);
   </div>
 </div>
 
-<div style="display: flex; align-items: flex-start; gap: 1rem;height: 600px">
-  <div style="flex: 1;">
-    ${radarChart(radarValues.filter(d => 
+<div style="display: flex; flex-direction: row; align-items: flex-start; justify-content: center; gap: 1rem; height: 600px; flex-grow: 1;">
+  <div>
+    ${radarChart(radarValues.filter(d =>
       selectedCountries.includes(d["Country of Origin"])
-    ), { 
-      width: 600, 
-      height: 600, 
-      maxRating: 10, 
+    ), {
+      width: 600,
+      height: 600,
+      maxRating: 10,
       levels: 4,
       colorScheme: radarColorScheme  // Pass the custom color scheme
     })}
@@ -582,7 +582,7 @@ console.log("Filtered data:", filteredData);
   80% {
     opacity: 0;
   }
-  100% { 
+  100% {
     transform: translate(0, 0);
     opacity: 0;
   }
@@ -780,7 +780,7 @@ p, ul {
 
 #world-map:active {
   cursor: grabbing;
-} 
+}
 
 /* Responsive layout for larger screens */
 @media (min-width: 768px) {
