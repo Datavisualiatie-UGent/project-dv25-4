@@ -335,6 +335,7 @@ function styleCountryCheckboxes() {
       col.opacity = 0.15;
       label.style.backgroundColor = col.formatRgb();
     } else {
+      label.style.border = `2px solid grey`;
       label.style.backgroundColor = "transparent";
     }
 
