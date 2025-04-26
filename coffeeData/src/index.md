@@ -30,72 +30,80 @@ toc: false
   <a href="#coffee-charts" class="cta-button">Explore Coffee Stats<span style="display: inline-block; margin-left: 0.25rem;">↓</span></a>
 </div>
 
-
 ```js
-const coffeeData = FileAttachment("./data/coffeeDataset.csv").csv();
-const world = FileAttachment("./data/world.json").json();
+import { radarChart } from "./components/radarChart.js";
 ```
 
 ```js
+const coffeeData = await FileAttachment("./data/coffeeDataset.csv").csv();
+```
 
+```js
+const world = await FileAttachment("./data/world.json").json();
+```
+
+```js
+const radarValues = await FileAttachment("./data/radarChart.json").json();
+```
+
+```js
 // Create a mapping of countries to their coordinates
 // This is a simplified mapping of country names to [longitude, latitude]
 const countryCoordinates = {
-  "Brazil": [-55, -10],
-  "Colombia": [-74, 4],
+  Brazil: [-55, -10],
+  Colombia: [-74, 4],
   "Costa Rica": [-84, 10],
   "El Salvador": [-89, 14],
-  "Ethiopia": [38, 8],
-  "Guatemala": [-90, 15],
-  "Honduras": [-86, 15],
-  "Indonesia": [120, -5],
-  "Kenya": [38, 0],
-  "Laos": [105, 18],
-  "Madagascar": [47, -20],
-  "Mexico": [-102, 23],
-  "Myanmar": [96, 21],
-  "Nicaragua": [-85, 13],
-  "Panama": [-80, 9],
-  "Peru": [-76, -10],
-  "Taiwan": [121, 24],
+  Ethiopia: [38, 8],
+  Guatemala: [-90, 15],
+  Honduras: [-86, 15],
+  Indonesia: [120, -5],
+  Kenya: [38, 0],
+  Laos: [105, 18],
+  Madagascar: [47, -20],
+  Mexico: [-102, 23],
+  Myanmar: [96, 21],
+  Nicaragua: [-85, 13],
+  Panama: [-80, 9],
+  Peru: [-76, -10],
+  Taiwan: [121, 24],
   "Tanzania, United Republic Of": [35, -6],
-  "Thailand": [101, 15],
-  "Uganda": [32, 1],
+  Thailand: [101, 15],
+  Uganda: [32, 1],
   "United States (Hawaii)": [-155, 20],
-  "Vietnam": [108, 16]
+  Vietnam: [108, 16],
 };
 
-const qualityPoints = coffeeData.map(d =>( {altitude:parseFloat(d.Altitude), cupPoints: parseFloat(d["Total Cup Points"])}))
+const qualityPoints = coffeeData.map((d) => ({
+  altitude: parseFloat(d.Altitude),
+  cupPoints: parseFloat(d["Total Cup Points"]),
+}));
 
 const countryCounts = {};
-coffeeData.forEach(d => {
+coffeeData.forEach((d) => {
   const country = d["Country of Origin"];
   if (country && countryCoordinates[country]) {
     countryCounts[country] ??= {
       count: 0,
-      
-    }
+    };
 
-    countryCounts[country].count++
+    countryCounts[country].count++;
   } else {
     console.warn(`Country not found in coordinates mapping: ${country}`);
   }
 });
 
-
 const coffeePoints = Object.entries(countryCounts).map(([country, count]) => {
   return {
     country: country,
     coordinates: countryCoordinates[country],
-    count: count.count
+    count: count.count,
   };
 });
 
-
-const counts = coffeePoints.map(d => d.count);
+const counts = coffeePoints.map((d) => d.count);
 const minCount = Math.min(...counts);
 const maxCount = Math.max(...counts);
-
 
 const getColorForCount = (count) => {
   const t = Math.sqrt((count - minCount) / (maxCount - minCount));
@@ -104,9 +112,7 @@ const getColorForCount = (count) => {
   return d3.interpolate("#ffe4b5", "#d2691e")(t); // Lighter gradient from moccasin to chocolate
 };
 
-
-
-let isGlobe = false
+let isGlobe = false;
 const worldView = Generators.observe((notify) => {
   const clickHandler = (event) => {
     if (event.target.id === "globe-toggle") {
@@ -115,99 +121,94 @@ const worldView = Generators.observe((notify) => {
       event.target.classList.add("active");
       const mapButton = document.getElementById("map-toggle");
       mapButton.classList.remove("active");
-    } else if(event.target.id === "map-toggle") {
+    } else if (event.target.id === "map-toggle") {
       isGlobe = false;
       event.target.classList.add("active");
       const globeButton = document.getElementById("globe-toggle");
       globeButton.classList.remove("active");
       notify("equirectangular");
     }
-  }
+  };
   notify("equirectangular");
 
-  document.addEventListener('click', clickHandler)
+  document.addEventListener("click", clickHandler);
 
   return () => {
-    document.removeEventListener('click', clickHandler);
-  }
-})
+    document.removeEventListener("click", clickHandler);
+  };
+});
 
 const world_point = Generators.observe((notify) => {
-    let curr_pos = 0;
-    let isDragging = false;
-    let lastMouseX = 0;
-    let dragRotation = 0;
+  let curr_pos = 0;
+  let isDragging = false;
+  let lastMouseX = 0;
+  let dragRotation = 0;
 
-    const removeInterv = setInterval(() => {
-    
+  const removeInterv = setInterval(() => {
     const world = document.getElementById("world-map");
-      if (world && world.matches(':hover')) {
-      } else {
-        if (!isGlobe) return notify(0)
-        curr_pos -= 0.5;
-        notify(curr_pos);
-      }
-    }, 25);
-    const movedownHandler = (e) => {
-        isDragging = true;
-        lastMouseX = e.clientX;
-        e.preventDefault();
-      }
+    if (world && world.matches(":hover")) {
+    } else {
+      if (!isGlobe) return notify(0);
+      curr_pos -= 0.5;
+      notify(curr_pos);
+    }
+  }, 25);
+  const movedownHandler = (e) => {
+    isDragging = true;
+    lastMouseX = e.clientX;
+    e.preventDefault();
+  };
 
-    const touchStartHandler = (e) => {
-      isDragging = true;
+  const touchStartHandler = (e) => {
+    isDragging = true;
+    lastMouseX = e.touches[0].clientX;
+    e.preventDefault();
+  };
+
+  const waitForWorldMap = setInterval(() => {
+    const world = document.getElementById("world-map");
+    if (world) {
+      clearInterval(waitForWorldMap);
+
+      world.addEventListener("mousedown", movedownHandler);
+
+      world.addEventListener("touchstart", touchStartHandler);
+    }
+  }, 100);
+
+  const touchmoveHandler = (e) => {
+    if (isDragging) {
+      const deltaX = e.touches[0].clientX - lastMouseX;
+      dragRotation += deltaX * 0.5;
       lastMouseX = e.touches[0].clientX;
-      e.preventDefault();
+      curr_pos = dragRotation;
+      notify(curr_pos);
     }
+  };
 
-    const waitForWorldMap = setInterval(() => {
-      const world = document.getElementById("world-map");
-      if (world) {
-        clearInterval(waitForWorldMap);
+  const mousemoveHandler = (e) => {
+    if (isDragging) {
+      const deltaX = e.clientX - lastMouseX;
+      dragRotation += deltaX * 0.5;
 
-        world.addEventListener("mousedown",movedownHandler);
-
-        world.addEventListener("touchstart", touchStartHandler);
-      }
-    }, 100);
-
-    const touchmoveHandler = (e) => {
-      if (isDragging) {
-        const deltaX = e.touches[0].clientX - lastMouseX;
-        dragRotation += deltaX * 0.5;
-        lastMouseX = e.touches[0].clientX;
-        curr_pos = dragRotation;
-        notify(curr_pos);
-      }
+      lastMouseX = e.clientX;
+      curr_pos = dragRotation;
+      notify(curr_pos);
     }
+  };
 
+  const mouseupHandler = () => {
+    isDragging = false;
+  };
 
-    const mousemoveHandler = (e) => {
-      if (isDragging) {
-        const deltaX = e.clientX - lastMouseX;
-        dragRotation += deltaX * 0.5; 
-        
-        lastMouseX = e.clientX;
-        curr_pos = dragRotation;
-        notify(curr_pos);
-      }
-    }
+  document.addEventListener("mousemove", mousemoveHandler);
 
-    const mouseupHandler = () => {
-      isDragging = false;
-    }
-  
-    document.addEventListener("mousemove", mousemoveHandler);
+  document.addEventListener("mouseup", mouseupHandler);
 
-    document.addEventListener("mouseup", mouseupHandler);
+  document.addEventListener("mouseleave", mouseupHandler);
 
-    document.addEventListener("mouseleave", mouseupHandler);
-
-
-
-    document.addEventListener("touchmove",touchmoveHandler );
-    document.addEventListener("touchend", mouseupHandler);
-
+  document.addEventListener("touchmove", touchmoveHandler);
+  document.addEventListener("touchend", mouseupHandler);
 
   notify(0);
   return () => {
@@ -215,7 +216,7 @@ const world_point = Generators.observe((notify) => {
     const world = document.getElementById("world-map");
     if (world) {
       world.removeEventListener("mousedown", movedownHandler);
-      world.removeEventListener("touchstart",touchStartHandler);
+      world.removeEventListener("touchstart", touchStartHandler);
     }
     document.removeEventListener("mousemove", mousemoveHandler);
     document.removeEventListener("mouseup", mouseupHandler);
@@ -224,10 +225,142 @@ const world_point = Generators.observe((notify) => {
     document.removeEventListener("touchend", mouseupHandler);
   };
 });
-console.log(coffeePoints)
+console.log(coffeePoints);
 ```
 
+```js
+const countryOptions = Array.from(
+  new Set(radarValues.map((d) => d["Country of Origin"]))
+);
 
+console.log("Options:", countryOptions);
+const checkboxes = Inputs.checkbox(countryOptions, {
+  value: [countryOptions[0]],
+  columns: 1,
+});
+const selectedCountries = view(checkboxes);
+
+console.log("Selected countries:", selectedCountries);
+```
+
+```js
+import * as d3 from "npm:d3";
+
+// Use a color scheme with more colors - d3.schemeCategory20 is no longer available in d3v6+
+// Create a custom expanded color palette
+const extendedColorPalette = [
+  // Vibrant primary and secondary colors
+  "#FF3E4D", // Vibrant red
+  "#00CC66", // Emerald green
+  "#4D79FF", // Royal blue
+  "#FF9900", // Amber orange
+  "#CC00FF", // Electric purple
+  "#00CCFF", // Cyan blue
+  "#FFCC00", // Golden yellow
+  "#FF66CC", // Hot pink
+  "#33CC33", // Lime green
+  "#6666FF", // Periwinkle blue
+
+  // Bright tertiary colors
+  "#FF6600", // Bright orange
+  "#00FFCC", // Turquoise
+  "#9933FF", // Violet
+  "#FFFF33", // Bright yellow
+  "#FF0099", // Magenta
+  "#3399FF", // Azure blue
+  "#FF99CC", // Pink
+  "#99CC00", // Chartreuse
+  "#FF6666", // Salmon
+
+  // Additional vibrant hues
+  "#00FF66", // Spring green
+  "#CC3399", // Deep magenta
+  "#FFCC66", // Pale orange
+  "#3366FF", // Dodger blue
+  "#FF33CC", // Deep pink
+  "#33FFAA", // Medium spring green
+  "#6633CC", // Royal purple
+  "#CCFF33", // Lime
+  "#FF5733", // Deep orange
+  "#33CCFF", // Sky blue
+
+  // Bonus colors for extra options
+  "#FF9966", // Coral
+  "#66CC99", // Medium aquamarine
+  "#9966FF", // Amethyst
+  "#FFCC99", // Peach
+  "#66CCFF", // Sky blue
+];
+// Create a global colorScale that both components will use
+const colorScale = d3.scaleOrdinal(extendedColorPalette).domain(countryOptions);
+
+// Pass this colorScale to the radarChart
+const radarColorScheme = {
+  domain: countryOptions,
+  range: countryOptions.map((country) => colorScale(country)),
+};
+
+function styleCountryCheckboxes() {
+  document.querySelectorAll(".controls label").forEach((label) => {
+    const country = label.textContent.trim();
+    const c = colorScale(country);
+
+    // Existing checkbox styling code...
+    // base styles
+    label.style.cursor = "pointer";
+    label.style.padding = "4px 6px";
+    label.style.margin = "2px 1px";
+    label.style.border = `2px solid ${c}`;
+    label.style.borderRadius = "6px";
+    label.style.position = "relative";
+    label.style.width = "fit-content";
+
+    // smooth transitions for hover
+    label.style.transition = "transform 0.15s ease, box-shadow 0.15s ease";
+
+    // cover the whole label with the invisible input
+    const input = label.querySelector("input");
+    input.style.position = "absolute";
+    input.style.top = "0";
+    input.style.left = "0";
+    input.style.width = "100%";
+    input.style.height = "100%";
+    input.style.margin = "0";
+    input.style.opacity = "0";
+    input.style.accentColor = c;
+
+    // selected background
+    if (input.checked) {
+      const col = d3.color(c);
+      col.opacity = 0.15;
+      label.style.backgroundColor = col.formatRgb();
+    } else {
+      label.style.backgroundColor = "transparent";
+    }
+
+    // add hover handlers
+    label.addEventListener("mouseenter", () => {
+      label.style.transform = "scale(1.03)";
+      label.style.boxShadow = "0 4px 8px rgba(0,0,0,0.1)";
+    });
+    label.addEventListener("mouseleave", () => {
+      label.style.transform = "scale(1)";
+      label.style.boxShadow = "none";
+    });
+  });
+}
+
+// invoke & bind
+styleCountryCheckboxes();
+checkboxes.addEventListener("input", styleCountryCheckboxes);
+```
+
+```js
+const filteredData = radarValues.filter((d) =>
+  selectedCountries.includes(d["Country of Origin"])
+);
+console.log("Filtered data:", filteredData);
+```
 
 <div class="map-view-toggle">
   <button id="map-toggle" class="map-toggle-button active" data-view="flat">
@@ -299,7 +432,6 @@ console.log(coffeePoints)
   </div>
 </div>
 
-
 <div class="card">
 <div >
 
@@ -336,8 +468,51 @@ console.log(coffeePoints)
   </div>
 </div>
 
+<div style="display: flex; align-items: flex-start; gap: 1rem;height: 600px">
+  <div style="flex: 1;">
+    ${radarChart(radarValues.filter(d => 
+      selectedCountries.includes(d["Country of Origin"])
+    ), { 
+      width: 600, 
+      height: 600, 
+      maxRating: 10, 
+      levels: 4,
+      colorScheme: radarColorScheme  // Pass the custom color scheme
+    })}
+  </div>
+  <div
+    class="controls"
+    style="padding: 1rem; background: rgba(70, 48, 30, 0.1); border-radius: 12px; border: 1px solid rgba(193, 154, 107, 0.3); min-width: 200px;max-width: 310px;height: 100%;"
+  >
+    <h3>Filter Countries</h3>
+    <div class="checkbox-list">
+      ${checkboxes}
+    </div>
+  </div>
+</div>
 
 <style>
+
+  .checkbox-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 5px 2px;
+    max-width: 300px;
+    height: 95%;
+  }
+  
+  .checkbox-list div {
+    height: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .checkbox-list > form {
+    height: 100%;
+  }
 
 .hero {
   display: flex;
@@ -626,4 +801,3 @@ p, ul {
   }
 }
 </style>
-
