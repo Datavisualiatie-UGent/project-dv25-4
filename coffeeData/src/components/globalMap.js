@@ -28,30 +28,24 @@ export default function createGlobalMap(coffeeData, world, Generators) {
     Vietnam: [108, 16],
   };
 
-  const qualityPoints = coffeeData.map((d) => ({
-    altitude: parseFloat(d.Altitude),
-    cupPoints: parseFloat(d["Total Cup Points"]),
-  }));
-
   const countryCounts = {};
+  
   coffeeData.forEach((d) => {
     const country = d["Country of Origin"];
     if (country && countryCoordinates[country]) {
       countryCounts[country] ??= {
         count: 0,
       };
-
-      countryCounts[country].count++;
-    } else {
-      console.warn(`Country not found in coordinates mapping: ${country}`);
+      
+      countryCounts[country].count += 1;
     }
   });
 
-  const coffeePoints = Object.entries(countryCounts).map(([country, count]) => {
+  const coffeePoints = Object.entries(countryCounts).map(([country, data]) => {
     return {
       country: country,
       coordinates: countryCoordinates[country],
-      count: count.count,
+      count: data.count,
     };
   });
 
@@ -61,9 +55,7 @@ export default function createGlobalMap(coffeeData, world, Generators) {
 
   const getColorForCount = (count) => {
     const t = Math.sqrt((count - minCount) / (maxCount - minCount));
-
-    // Using a more distinct and vibrant color range for better visibility
-    return d3.interpolate("#ffe4b5", "#d2691e")(t); // Lighter gradient from moccasin to chocolate
+    return d3.interpolate("#ffe4b5", "#d2691e")(t);
   };
 
   let isGlobe = false;

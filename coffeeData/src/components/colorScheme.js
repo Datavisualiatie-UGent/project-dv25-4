@@ -55,53 +55,34 @@ export function createColorScale(countryOptions) {
     range: countryOptions.map((country) => colorScale(country)),
   };
   
-  // Function to style checkboxes
   function styleCountryCheckboxes() {
+    console.log("Applying checkbox styling");
+    
     document.querySelectorAll(".controls label").forEach((label) => {
       const country = label.textContent.trim();
       const c = colorScale(country);
-
-      // base styles
-      label.style.cursor = "pointer";
-      label.style.padding = "4px 6px";
-      label.style.margin = "2px 1px";
-      label.style.border = `2px solid ${c}`;
-      label.style.borderRadius = "6px";
-      label.style.position = "relative";
-      label.style.width = "fit-content";
-
-      // smooth transitions for hover
-      label.style.transition = "transform 0.15s ease, box-shadow 0.15s ease";
-
-      // cover the whole label with the invisible input
       const input = label.querySelector("input");
-      input.style.position = "absolute";
-      input.style.top = "0";
-      input.style.left = "0";
-      input.style.width = "100%";
-      input.style.height = "100%";
-      input.style.margin = "0";
-      input.style.opacity = "0";
-      input.style.accentColor = c;
-
-      // selected background
-      if (input.checked) {
+      
+      const isChecked = input.checked 
+      
+      if (isChecked) {
+        if (!input.checked && country === countryOptions[0]) {
+          input.checked = true;
+        }
+        
+        label.style.borderColor = c;
+        label.classList.add('checked');
+        
         const col = d3.color(c);
         col.opacity = 0.15;
         label.style.backgroundColor = col.formatRgb();
       } else {
-        label.style.backgroundColor = "transparent";
+        label.style.borderColor = 'grey';
+        label.classList.remove('checked');
+        label.style.backgroundColor = 'transparent';
       }
-
-      // add hover handlers
-      label.addEventListener("mouseenter", () => {
-        label.style.transform = "scale(1.03)";
-        label.style.boxShadow = "0 4px 8px rgba(0,0,0,0.1)";
-      });
-      label.addEventListener("mouseleave", () => {
-        label.style.transform = "scale(1)";
-        label.style.boxShadow = "none";
-      });
+      
+      input.style.accentColor = c;
     });
   }
 

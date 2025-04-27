@@ -1,0 +1,35 @@
+.controls label {
+  cursor: pointer;
+  padding: 4px 6px;
+  margin: 2px 1px;
+  border: 2px solid grey;
+  border-radius: 6px;
+  position: relative;
+  width: fit-content;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  background-color: transparent;
+}
+
+.controls label:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Ensure initial checked state is styled */
+.controls label input:checked {
+  accent-color: inherit;
+}
+
+.controls label.checked {
+  /* The background color will be set dynamically with JavaScript */
+}
+
+.controls label input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+}

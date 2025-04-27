@@ -3,6 +3,7 @@ toc: false
 ---
 
 <link rel="stylesheet" href="./styles/coffee.css">
+<link rel="stylesheet" href="./styles/checkboxes.css">
 <div class="hero">
   <div class="coffee-svg-container">
     <svg class="coffee-svg" width="120" height="120" viewBox="0 0 120 120">
@@ -40,7 +41,10 @@ import { createColorScale } from "./components/colorScheme.js";
 ```
 
 ```js
-const coffeeData = await FileAttachment("./data/coffeeDataset.csv").csv();
+// Load data from the combined JSON file (no longer needed to load coffeeDataset.csv)
+const coffeeDataJson = await FileAttachment("./data/radarChart.json").json();
+const coffeeData = coffeeDataJson.full_data;
+const radarValues = coffeeDataJson.radar_data;
 ```
 
 ```js
@@ -48,13 +52,8 @@ const world = await FileAttachment("./data/world.json").json();
 ```
 
 ```js
-const radarValues = await FileAttachment("./data/radarChart.json").json();
-```
-
-```js
 // Initialize the global map component
-const { worldView, world_point, coffeePoints, getColorForCount } = createGlobalMap(coffeeData, world,Generators);
-console.log(coffeePoints);
+const { worldView, world_point, coffeePoints, getColorForCount } = createGlobalMap(coffeeData, world, Generators);
 ```
 
 ```js
@@ -62,7 +61,6 @@ const countryOptions = Array.from(
   new Set(radarValues.map((d) => d["Country of Origin"]))
 );
 
-console.log("Options:", countryOptions);
 const checkboxes = Inputs.checkbox(countryOptions, {
   value: [countryOptions[0]],
   columns: 1,
@@ -76,8 +74,9 @@ console.log("Selected countries:", selectedCountries);
 // Initialize the color scheme
 const { colorScale, radarColorScheme, styleCountryCheckboxes } = createColorScale(countryOptions);
 
-// Apply styling to checkboxes
-styleCountryCheckboxes();
+// Apply styling to checkboxes with a slight delay to ensure DOM is ready
+setTimeout(styleCountryCheckboxes, 50);
+// Add event listener for future changes
 checkboxes.addEventListener("input", styleCountryCheckboxes);
 ```
 
@@ -88,7 +87,7 @@ const filteredData = radarValues.filter((d) =>
 console.log("Filtered data:", filteredData);
 ```
 
-<div class="map-view-toggle">
+<div class="map-view-toggle" id="coffee-charts">
   <button id="map-toggle" class="map-toggle-button active" data-view="flat">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect x="2" y="4" width="20" height="16" rx="1" stroke="currentColor" stroke-width="1.5"/>
@@ -202,22 +201,19 @@ console.log("Filtered data:", filteredData);
 </div>
 
 <div class="card">
-<div style="display: flex; align-items: flex-start; gap: 1rem;height: 600px">
-  <div style="flex: 1;">
+<div style="display: flex; align-items: flex-start; gap: 1rem; height: 500px; padding-bottom: 2px;">
+  <div style="flex: 1; display: flex; align-items: center; justify-content: center; height: 100%;">
     ${radarChart(radarValues.filter(d => 
       selectedCountries.includes(d["Country of Origin"])
     ), {
-      width: 600,
-      height: 600,
+      width: 460,
+      height: 460,
       maxRating: 10,
       levels: 4,
-      colorScheme: radarColorScheme  // Pass the custom color scheme
+      colorScheme: radarColorScheme 
     })}
   </div>
-  <div
-    class="controls"
-    style="padding: 1rem; background: rgba(70, 48, 30, 0.1); border-radius: 12px; border: 1px solid rgba(193, 154, 107, 0.3); min-width: 200px;max-width: 310px;height: 100%;"
-  >
+  <div class="controls">
     <h3>Filter Countries</h3>
     <div class="checkbox-list">
       ${checkboxes}

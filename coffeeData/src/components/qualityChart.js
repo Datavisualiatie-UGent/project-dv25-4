@@ -6,37 +6,21 @@ export function createQualityChart(coffeeData) {
   const defaultQualityParam = "Total Cup Points";
   const defaultOtherFactor = "Altitude";
   
-  const prepareData = (coffeeData) => {
-    return coffeeData.map(d => {
-      const result = { countryOfOrigin: d["Country of Origin"] };
-      qualityParams.forEach(param => {
-        result[param] = parseFloat(d[param]) || 0;
-      });
-      if (d["Altitude"]) {
-        const altStr = d["Altitude"].toString();
-        if (altStr.includes("-")) {
-          const [min, max] = altStr.split("-").map(v => parseFloat(v.trim()));
-          result["Altitude"] = (min + max) / 2; 
-        } else {
-          result["Altitude"] = parseFloat(altStr) || 0;
-        }
-      } else {
-        result["Altitude"] = 0;
-      }
-      result["Number of Bags"] = parseFloat(d["Number of Bags"]) || 0;
-      if (d["Bag Weight"]) {
-        const bagWeight = d["Bag Weight"].toString();
-        const match = bagWeight.match(/(\d+)/);
-        result["Bag Weight"] = match ? parseFloat(match[1]) : 0;
-      } else {
-        result["Bag Weight"] = 0;
-      }
-      result["Moisture Percentage"] = parseFloat(d["Moisture Percentage"]) || 0;
-      result["Category One Defects"] = parseFloat(d["Category One Defects"]) || 0;
-      result["Quakers"] = parseFloat(d["Quakers"]) || 0;
-      result["Category Two Defects"] = parseFloat(d["Category Two Defects"]) || 0;
-      return result;
-    }).filter(d => !isNaN(d["Total Cup Points"]) && d["Total Cup Points"] > 0);
+  const prepareData = (data) => {
+    return data.filter(d => 
+      d[currentParams.qualityParam] !== undefined && 
+      d[currentParams.qualityParam] !== null &&
+      !isNaN(Number(d[currentParams.qualityParam])) && 
+      Number(d[currentParams.qualityParam]) > 0 &&
+      d[currentParams.otherFactor] !== undefined && 
+      d[currentParams.otherFactor] !== null &&
+      !isNaN(Number(d[currentParams.otherFactor]))
+    ).map(d => ({
+      ...d,
+      // Ensure numeric values are actually numbers
+      [currentParams.qualityParam]: Number(d[currentParams.qualityParam]),
+      [currentParams.otherFactor]: Number(d[currentParams.otherFactor])
+    }));
   };
   
   let currentParams = {
@@ -61,7 +45,9 @@ export function createQualityChart(coffeeData) {
         grid: true,
         labelOffset: 35,
         fontSize: 14,
-        fontWeight: "bold"
+        fontWeight: "bold",
+        type: "linear", 
+        tickCount: 8   
       },
       y: {
         label: currentParams.qualityParam,
@@ -69,7 +55,8 @@ export function createQualityChart(coffeeData) {
         tickFormat: "d",
         labelOffset: 45,
         fontSize: 14,
-        fontWeight: "bold"
+        fontWeight: "bold",
+        tickCount: 8   
       },
       style: {
         fontSize: 12
@@ -83,7 +70,7 @@ export function createQualityChart(coffeeData) {
           stroke: "#46301e",
           strokeWidth: 1,
           tip: true,
-          title: d => `${currentParams.qualityParam}: ${d[currentParams.qualityParam]}\n${currentParams.otherFactor}: ${d[currentParams.otherFactor]}\nCountry: ${d.countryOfOrigin}`
+          title: d => `${currentParams.qualityParam}: ${d[currentParams.qualityParam]}\n${currentParams.otherFactor}: ${d[currentParams.otherFactor]}\nCountry: ${d["Country of Origin"]}`
         }),
         Plot.linearRegressionY(processedData, {
           x: d => d[currentParams.otherFactor],

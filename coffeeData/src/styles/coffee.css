@@ -4,19 +4,78 @@
   gap: 0.5rem;
   margin: 5px 2px;
   max-width: 300px;
-  height: 95%;
+  height: calc(100% - 50px); /* Adjust height to account for heading */
+  overflow: hidden; /* Hide overflow */
 }
 
 .checkbox-list div {
   height: 100%;
-  overflow-y: auto;
+  overflow-y: auto; /* Enable vertical scrolling */
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  padding-right: 5px; /* Add some padding for scrollbar */
 }
 
 .checkbox-list > form {
   height: 100%;
+  overflow-y: auto; /* Enable scrolling within the form */
+}
+
+/* Add styling for individual checkboxes */
+.checkbox-list label {
+  display: flex;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.checkbox-list label:hover {
+  background-color: rgba(193, 154, 107, 0.2);
+}
+
+.checkbox-list input[type="checkbox"] {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+/* Style for the controls container */
+.controls {
+  padding: 1rem;
+  background: rgba(70, 48, 30, 0.1);
+  border-radius: 12px;
+  border: 1px solid rgba(193, 154, 107, 0.3);
+  min-width: 200px;
+  max-width: 310px;
+  height: calc(100% - 3rem); /* Adjust height to ensure it fits inside the card */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Hide any overflow */
+  margin-bottom: 2px; /* Add bottom margin to prevent overflow */
+}
+
+.controls h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(193, 154, 107, 0.3);
+}
+
+/* Add custom scrollbar styling */
+.checkbox-list div::-webkit-scrollbar {
+  width: 6px;
+}
+
+.checkbox-list div::-webkit-scrollbar-thumb {
+  background-color: rgba(193, 154, 107, 0.5);
+  border-radius: 6px;
+}
+
+.checkbox-list div::-webkit-scrollbar-track {
+  background-color: rgba(70, 48, 30, 0.1);
+  border-radius: 6px;
 }
 
 .hero {
@@ -348,8 +407,33 @@ p, ul {
   color: #e0d0c1;
 }
 
-@media (max-width: 768px) {
-  .dropdown-container {
+/* Radar chart container styling */
+.card {
+  margin-bottom: 2rem;
+  position: relative;
+  padding-bottom: 2px; /* Add padding to prevent overflow at bottom */
+  overflow: visible; /* Allow child elements to be visible */
+}
+
+/* Make radar chart responsive */
+.card svg.radar-chart {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Media queries for the radar chart layout */
+@media (max-width: 900px) {
+  .card > div {
     flex-direction: column;
+    height: auto !important;
+    padding-bottom: 2px; /* Add padding to bottom */
+  }
+  
+  .controls {
+    max-width: none;
+    width: 100%;
+    height: 300px !important;
+    margin-top: 1rem;
+    margin-bottom: 2px; /* Ensure bottom margin on mobile too */
   }
 }
