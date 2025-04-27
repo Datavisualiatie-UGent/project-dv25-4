@@ -204,8 +204,8 @@ console.log("Filtered data:", filteredData);
     ${radarChart(radarValues.filter(d => 
       selectedCountries.includes(d["Country of Origin"])
     ), {
-      width: 550,
-      height: 550,
+      width: 600,
+      height:600,
       maxRating: 10,
       levels: 4,
       colorScheme: radarColorScheme 
