@@ -41,7 +41,6 @@ import { createColorScale } from "./components/colorScheme.js";
 ```
 
 ```js
-// Load data from the combined JSON file (no longer needed to load coffeeDataset.csv)
 const coffeeDataJson = await FileAttachment("./data/radarChart.json").json();
 const coffeeData = coffeeDataJson.full_data;
 const radarValues = coffeeDataJson.radar_data;
@@ -175,19 +174,17 @@ console.log("Filtered data:", filteredData);
         <option value="Uniformity">Uniformity</option>
         <option value="Clean Cup">Clean Cup</option>
         <option value="Sweetness">Sweetness</option>
-        <option value="Overall">Overall</option>
       </select>
     </div>
     <div class="dropdown-group">
       <label for="other-factor">Other Factor:</label>
       <select id="other-factor" class="coffee-dropdown">
         <option value="Altitude" selected>Altitude</option>
-        <option value="Number of Bags">Number of Bags</option>
-        <option value="Bag Weight">Bag Weight</option>
+        <!-- <option value="Number of Bags">Number of Bags</option> -->
         <option value="Moisture Percentage">Moisture Percentage</option>
-        <option value="Category One Defects">Category One Defects</option>
-        <option value="Quakers">Quakers</option>
-        <option value="Category Two Defects">Category Two Defects</option>
+        <!-- <option value="Category One Defects">Category One Defects</option> -->
+        <!-- <option value="Quakers">Quakers</option> -->
+        <!-- <option value="Category Two Defects">Category Two Defects</option> -->
       </select>
     </div>
   </div>
