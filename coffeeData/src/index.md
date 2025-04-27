@@ -37,7 +37,6 @@ import { radarChart } from "./components/radarChart.js";
 import createGlobalMap from "./components/globalMap.js";
 import { createQualityChart } from "./components/qualityChart.js";
 import { createColorScale } from "./components/colorScheme.js";
-
 ```
 
 ```js
@@ -52,7 +51,8 @@ const world = await FileAttachment("./data/world.json").json();
 
 ```js
 // Initialize the global map component
-const { worldView, world_point, coffeePoints, getColorForCount } = createGlobalMap(coffeeData, world, Generators);
+const { worldView, world_point, coffeePoints, getColorForCount } =
+  createGlobalMap(coffeeData, world, Generators);
 ```
 
 ```js
@@ -71,7 +71,8 @@ console.log("Selected countries:", selectedCountries);
 
 ```js
 // Initialize the color scheme
-const { colorScale, radarColorScheme, styleCountryCheckboxes } = createColorScale(countryOptions);
+const { colorScale, radarColorScheme, styleCountryCheckboxes } =
+  createColorScale(countryOptions);
 
 // Apply styling to checkboxes with a slight delay to ensure DOM is ready
 setTimeout(styleCountryCheckboxes, 50);
@@ -203,8 +204,8 @@ console.log("Filtered data:", filteredData);
     ${radarChart(radarValues.filter(d => 
       selectedCountries.includes(d["Country of Origin"])
     ), {
-      width: 460,
-      height: 460,
+      width: 550,
+      height: 550,
       maxRating: 10,
       levels: 4,
       colorScheme: radarColorScheme 
