@@ -28,7 +28,10 @@ toc: false
     </svg>
   </div>
   <h1>CoffeeData</h1>
-  <h2>Exploring coffee statistics across the globe - coffee quality in different regions</h2>
+  <h2>
+  Coffee, a drink consumed and enjoyed by many people across the globe. But what is a delicious cup of coffee and from what part of the world does it originate from? That is exactly the question we’ll try to clarify on this page. <br/>
+  We have gathered data from the Coffee Quality Institute(CQI) which is a non-profit organization that works to improve the quality and value of coffee worldwide. From these data we have formed interesting visualizations that try to shine a light on the correlation between various factors of the growing, roasting and processing of coffee beans.
+</h2>
   <a href="#coffee-charts" class="cta-button">Explore Coffee Stats<span style="display: inline-block; margin-left: 0.25rem;">↓</span></a>
 </div>
 
@@ -37,7 +40,6 @@ import { radarChart } from "./components/radarChart.js";
 import createGlobalMap from "./components/globalMap.js";
 import { createQualityChart } from "./components/qualityChart.js";
 import { createColorScale } from "./components/colorScheme.js";
-
 ```
 
 ```js
@@ -52,7 +54,8 @@ const world = await FileAttachment("./data/world.json").json();
 
 ```js
 // Initialize the global map component
-const { worldView, world_point, coffeePoints, getColorForCount } = createGlobalMap(coffeeData, world, Generators);
+const { worldView, world_point, coffeePoints, getColorForCount } =
+  createGlobalMap(coffeeData, world, Generators);
 ```
 
 ```js
@@ -71,7 +74,8 @@ console.log("Selected countries:", selectedCountries);
 
 ```js
 // Initialize the color scheme
-const { colorScale, radarColorScheme, styleCountryCheckboxes } = createColorScale(countryOptions);
+const { colorScale, radarColorScheme, styleCountryCheckboxes } =
+  createColorScale(countryOptions);
 
 // Apply styling to checkboxes with a slight delay to ensure DOM is ready
 setTimeout(styleCountryCheckboxes, 50);
@@ -159,7 +163,10 @@ console.log("Filtered data:", filteredData);
 <div class="card">
 <div>
   <h3 class="card-title">Coffee Quality Relationship Analyzer</h3>
-  <p>Explore relationships between coffee quality parameters and other factors</p>
+  <p >
+    A cup of coffee can be described by a bunch of different factors like sweetness, acidity, uniformity, … But a question one could ask is, what is the effect of external factors on the flavor profile of the harvested beans. This graph aims to show this relationship. <br/>
+    Simply pick a quality parameter and an external factor and observe the relationship between the 2
+  </p>
   <div class="dropdown-container">
     <div class="dropdown-group">
       <label for="quality-param">Quality Parameter:</label>
