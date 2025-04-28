@@ -181,7 +181,6 @@ console.log("Filtered data:", filteredData);
       <label for="other-factor">Other Factor:</label>
       <select id="other-factor" class="coffee-dropdown">
         <option value="Altitude" selected>Altitude</option>
-        <!-- <option value="Number of Bags">Number of Bags</option> -->
         <option value="Moisture Percentage">Moisture Percentage</option>
         <!-- <option value="Category One Defects">Category One Defects</option> -->
         <!-- <option value="Quakers">Quakers</option> -->
