@@ -437,3 +437,7 @@ p, ul {
     margin-bottom: 2px; /* Ensure bottom margin on mobile too */
   }
 }
+
+.card-paragraph p {
+  text-align: justify;
+}
