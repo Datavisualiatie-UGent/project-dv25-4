@@ -163,7 +163,7 @@ console.log("Filtered data:", filteredData);
 <div class="card">
 <div>
   <h3 class="card-title">Coffee Quality Relationship Analyzer</h3>
-  <p >
+  <p>
     A cup of coffee can be described by a bunch of different factors like sweetness, acidity, uniformity, … But a question one could ask is, what is the effect of external factors on the flavor profile of the harvested beans. This graph aims to show this relationship. <br/>
     Simply pick a quality parameter and an external factor and observe the relationship between the 2
   </p>
@@ -204,6 +204,13 @@ console.log("Filtered data:", filteredData);
 </div>
 
 <div class="card">
+<h3 class="card-title">Flavour overview per country</h3>
+<p>
+  The radar chart provides a visual representation of the flavor profile of coffee beans from different countries. Each axis represents a specific quality parameter. Each parameter is scored on a scale of 10. By comparing multiple countries, we can observe how their flavor profiles differ and identify unique characteristics.
+  
+  Our parameters don't seem to differ that much between countries, this is probably due to the fact that all samples passed the quality control of the CQI which makes their overall quality more or less the same.
+  <br/>
+</p>
 <div style="display: flex; align-items: flex-start; gap: 1rem; height: 500px; padding-bottom: 2px;">
   <div style="flex: 1; display: flex; align-items: center; justify-content: center; height: 100%;">
     ${radarChart(radarValues.filter(d => 

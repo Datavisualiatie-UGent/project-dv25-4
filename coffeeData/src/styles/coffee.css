@@ -49,7 +49,9 @@
   border: 1px solid rgba(193, 154, 107, 0.3);
   min-width: 200px;
   max-width: 310px;
-  height: calc(100% - 3rem); /* Adjust height to ensure it fits inside the card */
+  height: calc(
+    100% - 3rem
+  ); /* Adjust height to ensure it fits inside the card */
   display: flex;
   flex-direction: column;
   overflow: hidden; /* Hide any overflow */
@@ -144,7 +146,7 @@
   80% {
     opacity: 0;
   }
-  100% { 
+  100% {
     transform: translate(0, 0);
     opacity: 0;
   }
@@ -235,7 +237,7 @@
   .hero h1 {
     font-size: 90px;
   }
-  
+
   .coffee-svg {
     width: 150px;
     height: 150px;
@@ -307,7 +309,8 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-h3, .card-title {
+h3,
+.card-title {
   color: #c19a6b;
   font-size: 1.5rem;
   margin-top: 0;
@@ -315,7 +318,12 @@ h3, .card-title {
   font-weight: 700;
 }
 
-p, ul {
+p {
+  max-width: 95%;
+}
+
+p,
+ul {
   color: var(--theme-foreground);
   font-size: 1rem;
   line-height: 1.6;
@@ -340,7 +348,7 @@ p, ul {
 
 #world-map:active {
   cursor: grabbing;
-} 
+}
 
 /* Responsive layout for larger screens */
 @media (min-width: 768px) {
@@ -348,11 +356,11 @@ p, ul {
     flex-direction: row;
     align-items: flex-start;
   }
-  
+
   #world-map {
     flex: 2;
   }
-  
+
   .visualization-description {
     flex: 1;
     max-width: 350px;
@@ -396,7 +404,8 @@ p, ul {
   transition: all 0.2s ease;
 }
 
-.coffee-dropdown:hover, .coffee-dropdown:focus {
+.coffee-dropdown:hover,
+.coffee-dropdown:focus {
   border-color: #aa6122;
   background-color: rgba(96, 56, 19, 0.2);
   outline: none;
@@ -428,7 +437,7 @@ p, ul {
     height: auto !important;
     padding-bottom: 2px; /* Add padding to bottom */
   }
-  
+
   .controls {
     max-width: none;
     width: 100%;
