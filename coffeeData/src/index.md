@@ -39,6 +39,7 @@ toc: false
 import { radarChart } from "./components/radarChart.js";
 import createGlobalMap from "./components/globalMap.js";
 import { createQualityChart } from "./components/qualityChart.js";
+import { createCategoricalQualityChart } from "./components/categoricalQualityChart.js";
 import { createColorScale } from "./components/colorScheme.js";
 ```
 
@@ -69,7 +70,6 @@ const checkboxes = Inputs.checkbox(countryOptions, {
 });
 const selectedCountries = view(checkboxes);
 
-console.log("Selected countries:", selectedCountries);
 ```
 
 ```js
@@ -87,7 +87,6 @@ checkboxes.addEventListener("input", styleCountryCheckboxes);
 const filteredData = radarValues.filter((d) =>
   selectedCountries.includes(d["Country of Origin"])
 );
-console.log("Filtered data:", filteredData);
 ```
 
 <div class="map-view-toggle" id="coffee-charts">
@@ -164,7 +163,7 @@ console.log("Filtered data:", filteredData);
 
 <div class="card">
 <div>
-  <h3 class="card-title">Coffee Quality Relationship Analyzer</h3>
+  <h3 class="card-title">Coffee Quality vs External Factors</h3>
   <p class="card-paragraph">
     A cup of coffee can be described by a bunch of different factors like sweetness, acidity, uniformity, … But a question one could ask is, what is the effect of external factors on the flavor profile of the harvested beans. This graph aims to show this relationship. <br/>
     Simply pick a quality parameter and an external factor and observe the relationship between the 2
@@ -198,34 +197,74 @@ console.log("Filtered data:", filteredData);
   </div>
   <div>
   <br/>
-    <div>
-      ${createQualityChart(coffeeData)}
-    </div>
+  <div>
+    ${createQualityChart(coffeeData)}
+  </div>
   </div>
 </div>
 </div>
 
 <div class="card">
-<div style="display: flex; align-items: flex-start; gap: 1rem; height: 500px; padding-bottom: 2px;">
-  <div style="flex: 1; display: flex; align-items: center; justify-content: center; height: 100%;">
-    ${radarChart(radarValues.filter(d => 
-      selectedCountries.includes(d["Country of Origin"])
-    ), {
-      width: 550,
-      height:550,
-      maxRating: 10,
-      levels: 4,
-      colorScheme: radarColorScheme 
-    })}
+<div>
+  <h3 class="card-title">Coffee Quality vs Categorical Factors</h3>
+  <p class="card-paragraph">
+    Beyond numeric factors like altitude and moisture, categorical attributes such as processing method and variety also significantly impact coffee quality. This visualization shows how different categorical factors relate to quality scores, helping to identify which varieties or processing methods tend to produce higher-rated coffees.
+  </p>
+  <div class="dropdown-container">
+    <div class="dropdown-group">
+      <label for="quality-param-cat">Quality Parameter:</label>
+      <select id="quality-param-cat" class="coffee-dropdown">
+        <option value="Total Cup Points" selected>Total Cup Points</option>
+        <option value="Aroma">Aroma</option>
+        <option value="Flavor">Flavor</option>
+        <option value="Aftertaste">Aftertaste</option>
+        <option value="Acidity">Acidity</option>
+        <option value="Body">Body</option>
+        <option value="Balance">Balance</option>
+        <option value="Uniformity">Uniformity</option>
+        <option value="Clean Cup">Clean Cup</option>
+        <option value="Sweetness">Sweetness</option>
+      </select>
+    </div>
+    <div class="dropdown-group">
+      <label for="categorical-factor">Categorical Factor:</label>
+      <select id="categorical-factor" class="coffee-dropdown">
+        <option value="Processing Method" selected>Processing Method</option>
+        <option value="Variety">Variety</option>
+        <option value="Color">Color</option>
+      </select>
+    </div>
   </div>
-  <div class="control-wrapper"> 
-    <div class="controls">
-      <h3>Filter Countries</h3>
-      <div class="checkbox-list">
-        ${checkboxes}
-        <br/>
+  <div>
+  <br/>
+  <div>
+    ${createCategoricalQualityChart(coffeeData)}
+  </div>
+  </div>
+</div>
+</div>
+
+<div class="card">
+  <div style="display: flex; align-items: flex-start; gap: 1rem; height: 500px; padding-bottom: 2px;">
+    <div style="flex: 1; display: flex; align-items: center; justify-content: center; height: 100%">
+      ${radarChart(radarValues.filter(d => 
+        selectedCountries.includes(d["Country of Origin"])
+      ), {
+        width: 550,
+        height:550,
+        maxRating: 10,
+        levels: 4,
+        colorScheme: radarColorScheme 
+      })}
+    </div>
+    <div class="control-wrapper"> 
+      <div class="controls">
+        <h3>Filter Countries</h3>
+        <div class="checkbox-list">
+          ${checkboxes}
+          <br/>
+        </div>
       </div>
     </div>
   </div>
-</div>
 </div>
