@@ -5,6 +5,11 @@ toc: false
 <link rel="stylesheet" href="./styles/coffee.css">
 <link rel="stylesheet" href="./styles/checkboxes.css">
 <div class="hero">
+  <!-- Coffee beans decoration background -->
+  <div class="coffee-beans-decoration">
+    <!-- These beans will be positioned dynamically via JavaScript -->
+  </div>
+  
   <div class="coffee-svg-container">
     <svg class="coffee-svg" width="120" height="120" viewBox="0 0 120 120">
       <!-- Coffee cup and smoke container -->
@@ -18,7 +23,8 @@ toc: false
           </g>
           <g class="smoke-3">
             <path d="M40.5,0 C40.5,0 43.5,5 43.5,10 C43.5,15 40.5,15 40.5,20 C40.5,25 43.5,25 43.5,30 C43.5,35 40.5,35 40.5,40"></path>
-          </g>    </g>
+          </g>    
+        </g>
       </g>
       <!-- Existing coffee cup with updated fill colors -->
       <path class="coffee-path cup" d="M 30,50 L 30,90 C 30,95 35,100 40,100 L 80,100 C 85,100 90,95 90,90 L 90,50 Z" fill="#46301e" stroke="#c19a6b" stroke-width="3"/>
@@ -27,11 +33,22 @@ toc: false
       <path class="coffee-path coffee" d="M 35,60 L 85,60" fill="none" stroke="#603813" stroke-width="3"/>
     </svg>
   </div>
+  
   <h1>CoffeeData</h1>
+  
+  <!-- <div class="bean-divider">
+    <div class="bean-wrapper">
+    <div class="divider-bean"></div>
+    <div class="divider-bean" style="transform: rotate(-45deg)"></div>
+    <div class="divider-bean"></div>
+    </div>
+  </div> -->
+  
   <h2>
-  Coffee, a drink consumed and enjoyed by many people across the globe. But what is a delicious cup of coffee and from what part of the world does it originate from? That is exactly the question we’ll try to clarify on this page. <br/>
-  We have gathered data from the Coffee Quality Institute(CQI) which is a non-profit organization that works to improve the quality and value of coffee worldwide. From these data we have formed interesting visualizations that try to shine a light on the correlation between various factors of the growing, roasting and processing of coffee beans.
-</h2>
+    Coffee, a drink consumed and enjoyed by many people across the globe. But what is a delicious cup of coffee and from what part of the world does it originate from? That is exactly the question we'll try to clarify on this page. <br/>
+    We have gathered data from the Coffee Quality Institute(CQI) which is a non-profit organization that works to improve the quality and value of coffee worldwide. From these data we have formed interesting visualizations that try to shine a light on the correlation between various factors of the growing, roasting and processing of coffee beans.
+  </h2>
+  <br/>
   <a href="#coffee-charts" class="cta-button">Explore Coffee Stats<span style="display: inline-block; margin-left: 0.25rem;">↓</span></a>
 </div>
 

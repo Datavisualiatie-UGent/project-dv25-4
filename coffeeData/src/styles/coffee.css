@@ -119,14 +119,76 @@ h1, h2, h3, h4, h5, h6, .card-title {
   text-wrap: balance;
   text-align: center;
   padding: 3rem 1rem;
+  position: relative;
+  overflow: hidden;
+  /* Remove the border-radius and box-shadow to better integrate with the page */
+}
+
+/* Add subtle pattern background - make it more subtle */
+/* .hero:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(circle at 20% 20%, rgba(193, 154, 107, 0.03) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 80%, rgba(193, 154, 107, 0.05) 0%, transparent 50%);
+  z-index: -1;
+} */
+
+
+
+.coffee-bean {
+  position: absolute;
+  width: 30px;
+  height: 18px;
+  background-color: #603813;
+  border-radius: 50%;
+  transform: rotate(var(--rotate));
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.3));
+  animation: float-bean 15s linear infinite;
+  opacity: 0.4;
+}
+
+.coffee-bean:before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 60%;
+  height: 2px;
+  background-color: #46301e;
+  transform: translate(-50%, -50%);
+  border-radius: 1px;
+}
+
+@keyframes float-bean {
+  0% {
+    transform: translate(0, 0) rotate(var(--rotate));
+  }
+  25% {
+    transform: translate(10px, 10px) rotate(calc(var(--rotate) + 5deg));
+  }
+  50% {
+    transform: translate(0, 20px) rotate(calc(var(--rotate) + 10deg));
+  }
+  75% {
+    transform: translate(-10px, 10px) rotate(calc(var(--rotate) + 5deg));
+  }
+  100% {
+    transform: translate(0, 0) rotate(var(--rotate));
+  }
 }
 
 .coffee-svg-container {
   margin-bottom: 1rem;
-  height: 120px;
+  height: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
+  transform: scale(1.2);
 }
 
 .coffee-path {
@@ -148,17 +210,17 @@ h1, h2, h3, h4, h5, h6, .card-title {
 }
 
 .smoke-1 {
-  animation: draw 1s forwards ease-in-out 1s, shift 5s linear 1.5s infinite;
+  animation: draw 1s forwards ease-in-out 1s, shift 6s linear 1.5s infinite;
   opacity: 0;
 }
 
 .smoke-2 {
-  animation: draw 1s forwards ease-in-out 1.2s, shift-2 4s linear 1.7s infinite;
+  animation: draw 1s forwards ease-in-out 1.2s, shift-2 5s linear 1.7s infinite;
   opacity: 0;
 }
 
 .smoke-3 {
-  animation: draw 1s forwards ease-in-out 1.4s, shift-3 5s linear 1.9s infinite;
+  animation: draw 1s forwards ease-in-out 1.4s, shift-3 7s linear 1.9s infinite;
   opacity: 0;
 }
 
@@ -170,48 +232,48 @@ h1, h2, h3, h4, h5, h6, .card-title {
 
 @keyframes shift {
   0% {
-    transform: translate(0, 45px);
-    opacity: 0.7;
+    transform: translate(0, 45px) scale(0.8);
+    opacity: 0.8;
   }
   80% {
-    opacity: 0;
+    opacity: 0.1;
   }
   100% { 
-    transform: translate(0, 0);
+    transform: translate(0, 0) scale(1);
     opacity: 0;
   }
 }
 
 @keyframes shift-2 {
   0% {
-    transform: translate(0, 45px);
-    opacity: 0.7;
+    transform: translate(0, 45px) scale(0.9);
+    opacity: 0.8;
   }
   80% {
-    opacity: 0;
+    opacity: 0.1;
   }
   100% {
-    transform: translate(0, 0);
+    transform: translate(0, 0) scale(1.1);
     opacity: 0;
   }
 }
 
 @keyframes shift-3 {
   0% {
-    transform: translate(0, 45px);
-    opacity: 0.7;
+    transform: translate(0, 45px) scale(0.7);
+    opacity: 0.8;
   }
   80% {
-    opacity: 0;
+    opacity: 0.1;
   }
   100% {
-    transform: translate(0, 0);
+    transform: translate(0, 0) scale(1);
     opacity: 0;
   }
 }
 
 .coffee-fill {
-  animation: fadeIn 1s forwards ease-in-out 1s;
+  animation: fadeIn 1s forwards ease-in-out 1s, ripple 5s ease-in-out 2s infinite;
   opacity: 0;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3)) brightness(1.1);
 }
@@ -222,8 +284,17 @@ h1, h2, h3, h4, h5, h6, .card-title {
   }
 }
 
+@keyframes ripple {
+  0%, 100% {
+    transform: scaleX(1);
+  }
+  50% {
+    transform: scaleX(1.02);
+  }
+}
+
 .hero h1 {
-  margin: 1rem 0;
+  margin: 0.5rem 0;
   padding: 1rem 0;
   max-width: none;
   font-size: 14vw;
@@ -235,10 +306,35 @@ h1, h2, h3, h4, h5, h6, .card-title {
   background-clip: text;
   letter-spacing: -0.02em;
   font-family: var(--heading-font);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  animation: titleIn 1.5s ease-out;
+  position: relative;
+}
+
+@keyframes titleIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero h1:after {
+  content: '';
+  position: absolute;
+  width: 50%;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #c19a6b, transparent);
+  bottom: 0;
+  left: 25%;
+  border-radius: 2px;
 }
 
 .hero h2 {
-  margin: 0;
+  margin: 1rem auto;
   max-width: 40em;
   font-size: 16px;
   font-style: initial;
@@ -246,6 +342,18 @@ h1, h2, h3, h4, h5, h6, .card-title {
   line-height: 1.5;
   color: var(--theme-foreground-muted);
   font-family: var(--body-font);
+  animation: fadeUp 1.5s ease-out 0.5s both;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .cta-button {
@@ -257,14 +365,68 @@ h1, h2, h3, h4, h5, h6, .card-title {
   border-radius: 50px;
   font-weight: 600;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 8px rgba(96, 56, 19, 0.2);
+  box-shadow: 0 4px 8px rgba(96, 56, 19, 0.3);
   font-family: var(--heading-font);
+  position: relative;
+  animation: fadeUp 1.5s ease-out 1s both;
+  z-index: 1;
 }
 
+/* Remove the problematic :before pseudo-element animation */
 .cta-button:hover {
   background-color: #7e572b;
   transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(96, 56, 19, 0.3);
+  box-shadow: 0 6px 15px rgba(96, 56, 19, 0.4);
+}
+
+.cta-button:hover:before {
+  left: 100%;
+}
+
+/* Horizontal coffee bean divider */
+.bean-divider {
+  display: flex;
+  align-items: center;
+  width: 80%;
+  max-width: 600px;
+  margin: 1rem auto;
+  opacity: 0.5;
+  animation: fadeUp 1.5s ease-out 0.7s both;
+}
+
+.bean-wrapper {
+  display: flex;
+  gap:0.4rem;
+  justify-content: center;
+  width: 100%;
+}
+
+.bean-divider hr {
+  flex-grow: 1;
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #c19a6b, transparent);
+}
+
+.bean-divider .divider-bean {
+  width: 20px;
+  height: 12px;
+  background-color: #c19a6b;
+  border-radius: 50%;
+  margin: 0 10px;
+  position: relative;
+  transform: rotate(45deg);
+}
+
+.bean-divider .divider-bean:before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 60%;
+  height: 1px;
+  background-color: rgba(70, 48, 30, 0.7);
+  transform: translate(-50%, -50%);
 }
 
 @media (min-width: 640px) {
