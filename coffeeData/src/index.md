@@ -151,12 +151,14 @@ console.log("Filtered data:", filteredData);
     </div>
   </div>
   
-  <div class="visualization-description">
+  <div class="visualization-description card">
     <h3 class="card-title">Global Coffee Origins</h3>
     <p>
-      We observe the global diversity of coffee production, with samples sourced from over 20 countries. The data shows the geographical spread of coffee cultivation, from traditional producers like Colombia, Ethiopia, and Brazil to regions such as Taiwan and Laos. The data shows that most of the coffee is produced near the equator, where the climate is ideal for coffee cultivation. ...
+      We observe the global diversity of coffee production, with samples sourced from over 20 countries. The data shows the geographical spread of coffee cultivation, from traditional producers like Colombia, Ethiopia, and Thailand to regions such as Taiwan and Vietnam. The data shows that most of the coffee is produced near the equator, where the climate is ideal for coffee cultivation. 
     </p>
+    <span>
     ${worldView === "orthographic" ? html`<p><em>You can rotate the globe by dragging or switch to a 2D map view using the toggle buttons above.</em></p>`: ""}
+    </span>
   </div>
 </div>
 
@@ -216,10 +218,13 @@ console.log("Filtered data:", filteredData);
       colorScheme: radarColorScheme 
     })}
   </div>
-  <div class="controls">
-    <h3>Filter Countries</h3>
-    <div class="checkbox-list">
-      ${checkboxes}
+  <div class="control-wrapper"> 
+    <div class="controls">
+      <h3>Filter Countries</h3>
+      <div class="checkbox-list">
+        ${checkboxes}
+        <br/>
+      </div>
     </div>
   </div>
 </div>
