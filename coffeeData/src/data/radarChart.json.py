@@ -28,16 +28,16 @@ all_columns = radar_parameters + [
     "Total Cup Points",
     "Overall",
     "Altitude",
-    "Number of Bags", 
+    "Number of Bags",
     "Bag Weight",
     "Moisture Percentage",
-    "Category One Defects", 
+    "Category One Defects",
     "Quakers",
     "Category Two Defects",
     "Grading Date",
     "Processing Method",
     "Variety",
-    "Color"
+    "Color",
 ]
 
 # Keep only columns that exist in the dataframe
@@ -45,39 +45,54 @@ columns_to_use = [col for col in all_columns if col in df.columns]
 
 # Process the Bag Weight field to extract numeric values in kg
 if "Bag Weight" in df.columns:
+
     def extract_bag_weight(weight_str):
         if pd.isna(weight_str) or weight_str is None:
             return None
-            
+
         # Convert to string if it's not already
         weight_str = str(weight_str).strip().lower()
-        
+
         # Extract numeric value
-        match = re.search(r'(\d+\.?\d*)', weight_str)
+        match = re.search(r"(\d+\.?\d*)", weight_str)
         if not match:
             return None
-            
+
         weight = float(match.group(1))
-        
+
         # Convert to kg if in pounds
-        if 'lb' in weight_str or 'lbs' in weight_str:
+        if "lb" in weight_str or "lbs" in weight_str:
             weight = weight * 0.453592  # Convert lbs to kg
-        
+
         return round(weight, 2)
-    
+
     df["Bag Weight"] = df["Bag Weight"].apply(extract_bag_weight)
 
 # Make sure all numeric columns are properly parsed
 numeric_columns = [
-    "Total Cup Points", "Aroma", "Flavor", "Aftertaste", "Acidity", "Body", 
-    "Balance", "Uniformity", "Clean Cup", "Sweetness", "Overall",
-    "Altitude", "Number of Bags", "Bag Weight", "Moisture Percentage",
-    "Category One Defects", "Quakers", "Category Two Defects"
+    "Total Cup Points",
+    "Aroma",
+    "Flavor",
+    "Aftertaste",
+    "Acidity",
+    "Body",
+    "Balance",
+    "Uniformity",
+    "Clean Cup",
+    "Sweetness",
+    "Overall",
+    "Altitude",
+    "Number of Bags",
+    "Bag Weight",
+    "Moisture Percentage",
+    "Category One Defects",
+    "Quakers",
+    "Category Two Defects",
 ]
 
 for col in numeric_columns:
     if col in df.columns:
-        df[col] = pd.to_numeric(df[col], errors='coerce')
+        df[col] = pd.to_numeric(df[col], errors="coerce")
 
 # Create radar chart data (country means)
 mean_df = df.groupby("Country of Origin")[radar_parameters].mean().reset_index()
@@ -101,7 +116,7 @@ mean_df["count"] = mean_df["count"].fillna(0).astype(int)
 # Order by counts (with Mean at the top)
 mean_row = mean_df[mean_df["Country of Origin"] == "Mean"]
 others = mean_df[mean_df["Country of Origin"] != "Mean"]
-others = others.sort_values(by="count", ascending=False)
+others = others.sort_values(by="Country of Origin", ascending=True)
 radar_df = pd.concat([mean_row, others], ignore_index=True)
 
 # Generate complete dataset with all samples and all fields
@@ -109,10 +124,12 @@ all_data = df[columns_to_use].copy()
 
 # Add count info to help with visualization
 all_data = all_data.merge(counts, on="Country of Origin", how="left")
-all_data["count"] = all_data["count"].fillna(0).astype(int)  # Fix for JSON serialization
+all_data["count"] = (
+    all_data["count"].fillna(0).astype(int)
+)  # Fix for JSON serialization
 
 # Round numeric columns to 2 decimal places for cleaner JSON
-numeric_cols = all_data.select_dtypes(include=['float64']).columns
+numeric_cols = all_data.select_dtypes(include=["float64"]).columns
 all_data[numeric_cols] = all_data[numeric_cols].round(2)
 
 # Replace all remaining NaN values with None (which becomes null in JSON)
@@ -122,7 +139,7 @@ radar_df = radar_df.replace({np.nan: None})
 # Generate the final data structure
 output = {
     "radar_data": radar_df.to_dict(orient="records"),
-    "full_data": all_data.to_dict(orient="records")
+    "full_data": all_data.to_dict(orient="records"),
 }
 
 # Output JSON to stdout
