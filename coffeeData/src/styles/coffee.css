@@ -705,7 +705,20 @@ ul {
 }
 
 .correlation_checkboxes label:has(input:checked) {
-  background-color: #aa6222a8 !important;
+  background-color: #c19a6b44 !important;
+  border-color: #c19a6b !important;
+}
+
+.correlation_checkboxes label:hover {
+  background-color: #555 !important;   /* Slightly lighter background on hover */
+  border-color: #888 !important;       /* Change border color on hover */
+  cursor: pointer;                     /* Show pointer cursor on hover */
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.correlation_checkboxes label:has(input:checked):hover {
+  background-color: #a3744c !important;
+  border-color: #c19a6b !important;
 }
 
 .correlation_controls {
