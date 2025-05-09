@@ -87,7 +87,6 @@ const checkboxes = Inputs.checkbox(countryOptions, {
   columns: 1,
 });
 const selectedCountries = view(checkboxes);
-
 ```
 
 ```js
@@ -312,7 +311,13 @@ const filteredData = radarValues.filter((d) =>
 </div>
 
 <div class="card">
-<h1>Correlation between coffee parameters</h1>
+<h3 class="card-title">Correlation between coffee parameters</h3>
+<p>
+  You might be wondering if some properties of the coffee are corelated with each other. That is why we included this correlation matrix to showcase this! The matrix shows how these parameters change compared to one another in the following sense: If parameter A increases, will parameter B also increase?
+
+A positive value shows that linear relation between 2 parameters e.g. they both increase or decrease with respect to one another. A negative value on the other hands shows an inverse relationship meaning that if one parameter icreases the other decreases and vice versa.
+
+</p>
  <div class="correlation_controls">
     <h3>Filter parameters</h3>
     <div class="correlation_checkboxes" style="display: flex; flex-wrap: nowrap; overflow-x: auto;">
