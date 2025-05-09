@@ -13,7 +13,7 @@ function corr(x, y) {
     return XY / Math.sqrt(XX * YY);
  }
 
-export function correlationMatrix(data, fields, { width = 800, height = 400} = {}) {
+export function correlationMatrix(data, fields, { width = 960, height = 420} = {}) {
     const correlations = d3.cross(fields, fields).map(([a, b]) => ({
        a,
        b,
