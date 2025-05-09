@@ -40,6 +40,7 @@ import { radarChart } from "./components/radarChart.js";
 import createGlobalMap from "./components/globalMap.js";
 import { createQualityChart } from "./components/qualityChart.js";
 import { createColorScale } from "./components/colorScheme.js";
+import { correlationMatrix } from "./components/correlation_matrix.js";
 ```
 
 ```js
@@ -70,6 +71,26 @@ const checkboxes = Inputs.checkbox(countryOptions, {
 const selectedCountries = view(checkboxes);
 
 console.log("Selected countries:", selectedCountries);
+```
+
+```js
+const correlationParameters = [
+  "Aroma",
+  "Flavor",
+  "Aftertaste",
+  "Acidity",
+  "Body",
+  "Balance",
+  "Uniformity",
+  "Clean Cup",
+  "Sweetness",
+];
+
+const correlationCheckboxes = Inputs.checkbox(correlationParameters, {
+  value: correlationParameters,
+  rows: 1,
+});
+const selectedCorrelationValues = view(correlationCheckboxes);
 ```
 
 ```js
@@ -221,6 +242,21 @@ console.log("Filtered data:", filteredData);
     <div class="checkbox-list">
       ${checkboxes}
     </div>
+  </div>
+</div>
+</div>
+
+<div class="card">
+<h1>Correlation between coffee parameters</h1>
+ <div class="correlation_controls">
+    <h3>Filter parameters</h3>
+    <div class="correlation_checkboxes" style="display: flex; flex-wrap: nowrap; overflow-x: auto;">
+      ${correlationCheckboxes}
+    </div>
+  </div>
+<div style="display: flex; align-items: flex-start; gap: 1rem; height: 500px; padding-bottom: 2px;">
+  <div style="flex: 1; display: flex; align-items: center; justify-content: center; height: 100%;">
+    ${correlationMatrix(radarValues, selectedCorrelationValues)}
   </div>
 </div>
 </div>

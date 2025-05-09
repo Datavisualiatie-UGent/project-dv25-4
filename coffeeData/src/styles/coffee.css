@@ -441,3 +441,68 @@ p, ul {
 .card-paragraph p {
   text-align: justify;
 }
+
+
+.correlation_checkboxes {
+  display: flex;
+  flex-wrap: nowrap;        /* Prevent line breaks */
+  gap: 0.5rem;
+  overflow-x: auto;         /* Allow horizontal scrolling */
+  padding-bottom: 0.5rem;
+  width: 100%;
+  scrollbar-width: thin;    /* Optional: thinner scrollbar in Firefox */
+  min-width: 0;
+}
+
+
+
+.correlation_checkboxes > form > div {
+  display: flex;
+  width: 100%;
+  display: flex;
+}
+
+
+.correlation_checkboxes label {
+  background-color: #333 !important;
+  color: white !important;
+  border: 1px solid #666 !important;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-family: sans-serif;
+  white-space: nowrap;      /* Prevent text wrapping inside labels */
+  flex-shrink: 0;           /* Prevent label from shrinking */
+}
+
+.correlation_checkboxes input[type="checkbox"] {
+  display: none; /* Hide the checkbox itself */
+}
+
+.correlation_checkboxes label:has(input:checked) {
+  background-color: #aa6222a8 !important;
+}
+
+.correlation_controls {
+  padding: 1rem;
+  background: rgba(70, 48, 30, 0.1);
+  border-radius: 12px;
+  border: 1px solid rgba(193, 154, 107, 0.3);
+  height: calc(100% - 3rem);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin: 2px;
+  overflow-x: hidden;
+  box-sizing: border-box;
+
+  width: calc(100% - 1rem);       /* Make it expand to full width of its parent */
+  max-width: none;   /* Remove previous max-width restriction */
+  flex: 1;           /* Allow it to grow in a flex container */
+}
+
+.correlation_controls h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(193, 154, 107, 0.3);
+}
