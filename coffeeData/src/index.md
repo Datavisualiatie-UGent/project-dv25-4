@@ -5,6 +5,11 @@ toc: false
 <link rel="stylesheet" href="./styles/coffee.css">
 <link rel="stylesheet" href="./styles/checkboxes.css">
 <div class="hero">
+  <!-- Coffee beans decoration background -->
+  <div class="coffee-beans-decoration">
+    <!-- These beans will be positioned dynamically via JavaScript -->
+  </div>
+  
   <div class="coffee-svg-container">
     <svg class="coffee-svg" width="120" height="120" viewBox="0 0 120 120">
       <!-- Coffee cup and smoke container -->
@@ -18,7 +23,8 @@ toc: false
           </g>
           <g class="smoke-3">
             <path d="M40.5,0 C40.5,0 43.5,5 43.5,10 C43.5,15 40.5,15 40.5,20 C40.5,25 43.5,25 43.5,30 C43.5,35 40.5,35 40.5,40"></path>
-          </g>    </g>
+          </g>    
+        </g>
       </g>
       <!-- Existing coffee cup with updated fill colors -->
       <path class="coffee-path cup" d="M 30,50 L 30,90 C 30,95 35,100 40,100 L 80,100 C 85,100 90,95 90,90 L 90,50 Z" fill="#46301e" stroke="#c19a6b" stroke-width="3"/>
@@ -27,11 +33,22 @@ toc: false
       <path class="coffee-path coffee" d="M 35,60 L 85,60" fill="none" stroke="#603813" stroke-width="3"/>
     </svg>
   </div>
+  
   <h1>CoffeeData</h1>
+  
+  <!-- <div class="bean-divider">
+    <div class="bean-wrapper">
+    <div class="divider-bean"></div>
+    <div class="divider-bean" style="transform: rotate(-45deg)"></div>
+    <div class="divider-bean"></div>
+    </div>
+  </div> -->
+  
   <h2>
-  Coffee, a drink consumed and enjoyed by many people across the globe. But what is a delicious cup of coffee and from what part of the world does it originate from? That is exactly the question we’ll try to clarify on this page. <br/>
-  We have gathered data from the Coffee Quality Institute(CQI) which is a non-profit organization that works to improve the quality and value of coffee worldwide. From these data we have formed interesting visualizations that try to shine a light on the correlation between various factors of the growing, roasting and processing of coffee beans.
-</h2>
+    Coffee, a drink consumed and enjoyed by many people across the globe. But what is a delicious cup of coffee and from what part of the world does it originate from? That is exactly the question we'll try to clarify on this page. <br/>
+    We have gathered data from the Coffee Quality Institute(CQI) which is a non-profit organization that works to improve the quality and value of coffee worldwide. From these data we have formed interesting visualizations that try to shine a light on the correlation between various factors of the growing, roasting and processing of coffee beans.
+  </h2>
+  <br/>
   <a href="#coffee-charts" class="cta-button">Explore Coffee Stats<span style="display: inline-block; margin-left: 0.25rem;">↓</span></a>
 </div>
 
@@ -39,6 +56,7 @@ toc: false
 import { radarChart } from "./components/radarChart.js";
 import createGlobalMap from "./components/globalMap.js";
 import { createQualityChart } from "./components/qualityChart.js";
+import { createCategoricalQualityChart } from "./components/categoricalQualityChart.js";
 import { createColorScale } from "./components/colorScheme.js";
 ```
 
@@ -69,7 +87,6 @@ const checkboxes = Inputs.checkbox(countryOptions, {
 });
 const selectedCountries = view(checkboxes);
 
-console.log("Selected countries:", selectedCountries);
 ```
 
 ```js
@@ -87,7 +104,6 @@ checkboxes.addEventListener("input", styleCountryCheckboxes);
 const filteredData = radarValues.filter((d) =>
   selectedCountries.includes(d["Country of Origin"])
 );
-console.log("Filtered data:", filteredData);
 ```
 
 <div class="map-view-toggle" id="coffee-charts">
@@ -151,19 +167,21 @@ console.log("Filtered data:", filteredData);
     </div>
   </div>
   
-  <div class="visualization-description">
+  <div class="visualization-description card">
     <h3 class="card-title">Global Coffee Origins</h3>
     <p>
-      We observe the global diversity of coffee production, with samples sourced from over 20 countries. The data shows the geographical spread of coffee cultivation, from traditional producers like Colombia, Ethiopia, and Brazil to regions such as Taiwan and Laos. The data shows that most of the coffee is produced near the equator, where the climate is ideal for coffee cultivation. ...
+      We observe the global diversity of coffee production, with samples sourced from over 20 countries. The data shows the geographical spread of coffee cultivation, from traditional producers like Colombia, Ethiopia, and Thailand to regions such as Taiwan and Vietnam. The data shows that most of the coffee is produced near the equator, where the climate is ideal for coffee cultivation. 
     </p>
+    <span>
     ${worldView === "orthographic" ? html`<p><em>You can rotate the globe by dragging or switch to a 2D map view using the toggle buttons above.</em></p>`: ""}
+    </span>
   </div>
 </div>
 
 <div class="card">
 <div>
-  <h3 class="card-title">Coffee Quality Relationship Analyzer</h3>
-  <p>
+  <h3 class="card-title">Coffee Quality vs External Factors</h3>
+  <p class="card-paragraph">
     A cup of coffee can be described by a bunch of different factors like sweetness, acidity, uniformity, … But a question one could ask is, what is the effect of external factors on the flavor profile of the harvested beans. This graph aims to show this relationship. <br/>
     Simply pick a quality parameter and an external factor and observe the relationship between the 2
   </p>
@@ -196,9 +214,49 @@ console.log("Filtered data:", filteredData);
   </div>
   <div>
   <br/>
-    <div>
-      ${createQualityChart(coffeeData)}
+  <div>
+    ${createQualityChart(coffeeData)}
+  </div>
+  </div>
+</div>
+</div>
+
+<div class="card">
+<div>
+  <h3 class="card-title">Coffee Quality vs Categorical Factors</h3>
+  <p class="card-paragraph">
+    Beyond numeric factors like altitude and moisture, categorical attributes such as processing method and variety also significantly impact coffee quality. This visualization shows how different categorical factors relate to quality scores, helping to identify which varieties or processing methods tend to produce higher-rated coffees.
+  </p>
+  <div class="dropdown-container">
+    <div class="dropdown-group">
+      <label for="quality-param-cat">Quality Parameter:</label>
+      <select id="quality-param-cat" class="coffee-dropdown">
+        <option value="Total Cup Points" selected>Total Cup Points</option>
+        <option value="Aroma">Aroma</option>
+        <option value="Flavor">Flavor</option>
+        <option value="Aftertaste">Aftertaste</option>
+        <option value="Acidity">Acidity</option>
+        <option value="Body">Body</option>
+        <option value="Balance">Balance</option>
+        <option value="Uniformity">Uniformity</option>
+        <option value="Clean Cup">Clean Cup</option>
+        <option value="Sweetness">Sweetness</option>
+      </select>
     </div>
+    <div class="dropdown-group">
+      <label for="categorical-factor">Categorical Factor:</label>
+      <select id="categorical-factor" class="coffee-dropdown">
+        <option value="Processing Method" selected>Processing Method</option>
+        <option value="Variety">Variety</option>
+        <option value="Color">Color</option>
+      </select>
+    </div>
+  </div>
+  <div>
+  <br/>
+  <div>
+    ${createCategoricalQualityChart(coffeeData)}
+  </div>
   </div>
 </div>
 </div>
