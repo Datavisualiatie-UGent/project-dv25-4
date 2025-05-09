@@ -56,7 +56,6 @@ export function createColorScale(countryOptions) {
   };
   
   function styleCountryCheckboxes() {
-    console.log("Applying checkbox styling");
     
     document.querySelectorAll(".controls label").forEach((label) => {
       const country = label.textContent.trim();
