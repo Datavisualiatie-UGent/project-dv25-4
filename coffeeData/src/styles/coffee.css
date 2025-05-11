@@ -79,6 +79,10 @@ h6,
   cursor: pointer;
 }
 
+.controls-horizontal {
+  max-width: unset !important;
+}
+
 .controls {
   background: rgba(70, 48, 30, 0.1);
   border-radius: 12px;
@@ -392,6 +396,8 @@ h6,
   left: 100%;
 }
 
+
+
 /* Horizontal coffee bean divider */
 .bean-divider {
   display: flex;
@@ -655,14 +661,8 @@ ul {
 .card-paragraph p {
   text-align: justify;
 
-  .controls {
-    max-width: none;
-    width: 100%;
-    height: 300px !important;
-    margin-top: 1rem;
-    margin-bottom: 2px; /* Ensure bottom margin on mobile too */
-  }
 }
+
 
 .card-paragraph p {
   text-align: justify;
@@ -677,7 +677,8 @@ ul {
   padding-bottom: 0.5rem;
   width: 100%;
   scrollbar-width: thin;    /* Optional: thinner scrollbar in Firefox */
-  min-width: 0;
+  padding: 1rem;
+  padding-top: 0rem;
 }
 
 
@@ -690,9 +691,9 @@ ul {
 
 
 .correlation_checkboxes label {
-  background-color: #333 !important;
   color: white !important;
-  border: 1px solid #666 !important;
+  border-color: #666 !important;
+  background-color: transparent !important;
   border-radius: 5px;
   padding: 5px 10px;
   font-family: sans-serif;
@@ -705,21 +706,13 @@ ul {
 }
 
 .correlation_checkboxes label:has(input:checked) {
-  background-color: #c19a6b44 !important;
+  background-color: #c19a6b22 !important;
   border-color: #c19a6b !important;
 }
 
-.correlation_checkboxes label:hover {
-  background-color: #555 !important;   /* Slightly lighter background on hover */
-  border-color: #888 !important;       /* Change border color on hover */
-  cursor: pointer;                     /* Show pointer cursor on hover */
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-}
 
-.correlation_checkboxes label:has(input:checked):hover {
-  background-color: #a3744c !important;
-  border-color: #c19a6b !important;
-}
+
+
 
 .correlation_controls {
   padding: 1rem;
@@ -744,4 +737,16 @@ ul {
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid rgba(193, 154, 107, 0.3);
+}
+
+/* Styling for axis labels with tooltips */
+.plot .axis .tick text[title] {
+  cursor: help;
+  text-decoration: none;
+  border-bottom: none;
+}
+
+.plot .axis .tick text[title]:hover {
+  text-decoration: underline dotted;
+  text-underline-offset: 2px;
 }

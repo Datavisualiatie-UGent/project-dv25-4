@@ -86,6 +86,18 @@ export function createCategoricalQualityChart(coffeeData) {
       ? groupedData.slice(0, maxCategories) 
       : groupedData;
     
+    // Function to truncate long category names
+    const truncateString = (str, maxLength) => {
+      if (str.length <= maxLength) return str;
+      return str.substring(0, maxLength - 3) + '...';
+    };
+    
+    // Process the display data to truncate long category names
+    const processedDisplayData = displayData.map(d => ({
+      ...d,
+      displayCategory: truncateString(d.category, 27)
+    }));
+    
     // Create the plot
     const plot = Plot.plot({
       width: element.clientWidth || 800,
@@ -96,7 +108,7 @@ export function createCategoricalQualityChart(coffeeData) {
       marginTop: 40,
 
       y: {
-        domain: displayData.map(d => d.category),
+        domain: processedDisplayData.map(d => d.displayCategory),
         tickPadding: 5,
         tickSize: 0,
         fontSize: 14,

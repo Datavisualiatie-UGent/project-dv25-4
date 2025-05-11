@@ -318,9 +318,9 @@ const filteredData = radarValues.filter((d) =>
 A positive value shows that linear relation between 2 parameters e.g. they both increase or decrease with respect to one another. A negative value on the other hands shows an inverse relationship meaning that if one parameter icreases the other decreases and vice versa.
 
 </p>
- <div class="correlation_controls">
+ <div class="controls controls-horizontal">
     <h3>Filter parameters</h3>
-    <div class="correlation_checkboxes" style="display: flex; flex-wrap: nowrap; overflow-x: auto;">
+    <div class="correlation_checkboxes" >
       ${correlationCheckboxes}
     </div>
   </div>
