@@ -86,29 +86,20 @@ export function createCategoricalQualityChart(coffeeData) {
       ? groupedData.slice(0, maxCategories) 
       : groupedData;
     
-    // Function to truncate long category names
-    const truncateString = (str, maxLength) => {
-      if (str.length <= maxLength) return str;
-      return str.substring(0, maxLength - 3) + '...';
-    };
-    
-    // Process the display data to truncate long category names
-    const processedDisplayData = displayData.map(d => ({
-      ...d,
-      displayCategory: truncateString(d.category, 27)
-    }));
+
+   
     
     // Create the plot
     const plot = Plot.plot({
       width: element.clientWidth || 800,
       height: Math.max(400, 30 * displayData.length)*1.2,
-      marginLeft: 200, // Increased left margin to avoid label overlap
+      marginLeft: 220, // Increased left margin to avoid label overlap
       marginBottom: 70, // Increased for the legend
       marginRight: 70, // Increased right margin for sample counts
       marginTop: 40,
 
       y: {
-        domain: processedDisplayData.map(d => d.displayCategory),
+        domain: displayData.map(d => d.category),
         tickPadding: 5,
         tickSize: 0,
         fontSize: 14,

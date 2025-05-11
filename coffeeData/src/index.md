@@ -203,7 +203,7 @@ const filteredData = radarValues.filter((d) =>
   <h3 class="card-title">Coffee Quality vs External Factors</h3>
   <p class="card-paragraph">
     A cup of coffee can be described by a bunch of different factors like sweetness, acidity, uniformity, … But a question one could ask is, what is the effect of external factors on the flavor profile of the harvested beans. This graph aims to show this relationship. <br/>
-    Simply pick a quality parameter and an external factor and observe the relationship between the 2
+    Simply pick a quality parameter and an external factor and observe the relationship between the 2.
   </p>
   <div class="dropdown-container">
     <div class="dropdown-group">
