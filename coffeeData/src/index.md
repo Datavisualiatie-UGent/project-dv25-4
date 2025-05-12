@@ -202,7 +202,8 @@ const filteredData = radarValues.filter((d) =>
 <div>
   <h3 class="card-title">Coffee Quality vs External Factors</h3>
   <p class="card-paragraph">
-    A cup of coffee can be described by a bunch of different factors like sweetness, acidity, uniformity, … But a question one could ask is, what is the effect of external factors on the flavor profile of the harvested beans. This graph aims to show this relationship. <br/>
+    A cup of coffee can be described by a bunch of different factors like sweetness, acidity, uniformity, … But a question one could ask is, what is the effect of external factors on the flavor profile of the harvested beans. This graph aims to show this relationship. We observe that there is a slight increase in quality parameters as altitude increases, while the quality tends to decrease when the moisture percentage increases.
+    <br/>
     Simply pick a quality parameter and an external factor and observe the relationship between the 2.
   </p>
   <div class="dropdown-container">
@@ -245,7 +246,7 @@ const filteredData = radarValues.filter((d) =>
 <div>
   <h3 class="card-title">Coffee Quality vs Categorical Factors</h3>
   <p class="card-paragraph">
-    Beyond numeric factors like altitude and moisture, categorical attributes such as processing method and variety also significantly impact coffee quality. This visualization shows how different categorical factors relate to quality scores, helping to identify which varieties or processing methods tend to produce higher-rated coffees.
+    Beyond numeric factors like altitude and moisture, categorical attributes such as processing method and variety also impact coffee quality. This visualization shows how different categorical factors relate to quality scores, helping to identify which varieties or processing methods tend to produce higher-rated coffees.
   </p>
   <div class="dropdown-container">
     <div class="dropdown-group">
