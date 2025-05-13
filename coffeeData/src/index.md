@@ -197,6 +197,11 @@ const filteredData = radarValues.filter((d) =>
     </span>
   </div>
 </div>
+<p>
+  <small>
+    Keep in mind that this map does not show what countries export the most coffee but rather where CQI has taken it's samples from. The fact that CQI has offices base in Thailand and Taiwan explains why most of their samples come from those countries.
+  </small>
+</p>
 
 <div class="card">
 <div>

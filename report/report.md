@@ -4,7 +4,7 @@
 
 | Naam            | Taken                                                           |
 |-----------------|---------------------------------------------------------------------------------------|
-| Thibaud Collyn  | - Correlatiematrix met aanpasbare parameters |
+| Thibaud Collyn  | - Correlatiematrix met aanpasbare parameters<br>- Tekst bij visualisaties<br>- Schetsen van visualisatie ideeën  |
 | Ben De Meurichy | - Implementatie van radar chart<br>- Datascrapers en loaders<br>- ParquetKit-ondersteuning<br>- CI/CD Workflow setup |
 | Wout Verdyck    | - Implementatie van de hero-sectie<br>- Boxplot voor categorische factoren<br>- Kaartvisualisatie<br>- Kwaliteit vs externe factoren |
 
@@ -33,8 +33,10 @@ In deze fase richtten we ons op het bouwen van de datapijplijnen en het voorbere
 - Kaartvisualisatie toegevoegd met kaart integratie
 
 ### Verdere Visualisaties (5-27 april 2025)
+We zaten met zen allen samen om een aantal visualisaties op papier uit te denken en vorm te geven zodat we een duidelijk doel hadden en iedereen aan zijn visualisatie kon beginnen. Ook dachten we na over de algemene layout van de webpagina.
+![Visualisaties op papier](screenshots/visualisations_on_paper.jpg)
 
-We begonnen met het implementeren van de visualisaties en het opsplitsen van de code in verschillende componenten.
+Hierna begonnen met het implementeren van de visualisaties en het opsplitsen van de code in verschillende componenten.
 
 ![Verdere visualisaties](screenshots/verdere_vis.png)
 
