@@ -103,7 +103,11 @@ export function createCategoricalQualityChart(coffeeData) {
         tickPadding: 5,
         tickSize: 0,
         fontSize: 14,
-        fontWeight: "bold"
+        fontWeight: "bold",
+        // Add custom formatter to truncate text
+        tickFormat: (d) => {
+          return d.length > 32 ? d.slice(0, 32) + "..." : d;
+        }
       },
       x: {
         label: currentParams.qualityParam,
@@ -167,6 +171,46 @@ export function createCategoricalQualityChart(coffeeData) {
     });
     
     element.appendChild(plot);
+    
+    // Add tooltip functionality to truncated labels
+    setTimeout(() => {
+      const yAxisLabels = element.querySelectorAll('.coffee-categorical-chart > figure > svg > g:nth-child(2) text');
+      
+      yAxisLabels.forEach((label, index) => {
+        if (index < displayData.length) {
+          const fullText = displayData[index].category;
+          
+          // Set max-width constraint on labels
+          label.setAttribute('style', 'max-width: 50px; overflow: hidden; text-overflow: ellipsis;');
+          
+          // Add title attribute for tooltip
+          label.setAttribute('title', fullText);
+          
+          // Optional: Add event listeners for custom tooltip if needed
+          label.addEventListener('mouseover', (e) => {
+            if (fullText.length > 10) {
+              const tooltip = document.createElement('div');
+              tooltip.textContent = fullText;
+              tooltip.style.position = 'absolute';
+              tooltip.style.background = '#21160E';
+              tooltip.style.padding = '5px';
+              tooltip.style.border = '1px solid #c19a6b';
+              tooltip.style.borderRadius = '3px';
+              tooltip.style.zIndex = '1000';
+              tooltip.style.left = `${e.pageX + 10}px`;
+              tooltip.style.top = `${e.pageY + 10}px`;
+              tooltip.classList.add('category-tooltip');
+              document.body.appendChild(tooltip);
+            }
+          });
+          
+          label.addEventListener('mouseout', () => {
+            const tooltips = document.querySelectorAll('.category-tooltip');
+            tooltips.forEach(t => t.remove());
+          });
+        }
+      });
+    }, 100);
   };
   
   setTimeout(() => {
@@ -185,6 +229,8 @@ export function createCategoricalQualityChart(coffeeData) {
         currentParams.categoricalFactor = categoricalSelect.value;
         updateVisualization();
       });
+
+      
       
       updateVisualization();
     }
