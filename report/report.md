@@ -33,10 +33,10 @@ In deze fase richtten we ons op het bouwen van de datapijplijnen en het voorbere
 - Kaartvisualisatie toegevoegd met kaart integratie
 
 ### Verdere Visualisaties (5-27 april 2025)
-We zaten met zen allen samen om een aantal visualisaties op papier uit te denken en vorm te geven zodat we een duidelijk doel hadden en iedereen aan zijn visualisatie kon beginnen. Ook dachten we na over de algemene layout van de webpagina.
+We zaten met z'n allen samen om een aantal visualisaties op papier uit te denken en vorm te geven, zodat we een duidelijk doel hadden en iedereen aan zijn visualisatie kon beginnen. Ook dachten we na over de algemene layout van de webpagina.
 ![Visualisaties op papier](screenshots/visualisations_on_paper.jpg)
 
-Hierna begonnen met het implementeren van de visualisaties en het opsplitsen van de code in verschillende componenten.
+Hierna begonnen we met het implementeren van de visualisaties en het opsplitsen van de code in verschillende componenten.
 
 ![Verdere visualisaties](screenshots/verdere_vis.png)
 
@@ -64,7 +64,7 @@ Deze fase richtte zich op het verfijnen van visualisaties, het toevoegen van de 
 - Boxplot toegevoegd voor categorische factoren
 - Styling verbeterd
 
-### Laatste Verbeteringen (9-11 mei 2025)
+### Laatste Verbeteringen (9-17 mei 2025)
 
 De laatste fase bestond uit het toevoegen van de laatste visualisatie en het aanbrengen van stijlverbeteringen.
 
@@ -75,3 +75,4 @@ De laatste fase bestond uit het toevoegen van de laatste visualisatie en het aan
 - Correlatiematrix geïmplementeerd met aanpasbare parameters
 - Laatste stijlverbeteringen doorgevoerd in het project (consistente typography, kleuren)
 - Hero sectie verbeterd
+- Enkele elementen toevoegen om plots duidelijker te maken (zoals de evenaar tonen op de kaart en een legende voor de boxplot)
