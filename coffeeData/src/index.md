@@ -73,7 +73,7 @@ const world = await FileAttachment("./data/world.json").json();
 
 ```js
 // Initialize the global map component
-const { worldView, world_point, coffeePoints, getColorForCount } =
+const { worldView, world_point, coffeePoints, getColorForCount, equator } =
   createGlobalMap(coffeeData, world, Generators);
 ```
 
@@ -153,7 +153,7 @@ const filteredData = radarValues.filter((d) =>
     <div>
     ${
       resize(async (width) => Plot.plot({
-          projection: {type: worldView, rotate: [world_point, 0]},
+          projection: {type: worldView, rotate: [worldView === "orthographic" ? world_point : 0, 0]},
           width: width,
           height: width * 0.6,
           margin: 0,
@@ -167,6 +167,27 @@ const filteredData = radarValues.filter((d) =>
               stroke: "#c19a6b",
               strokeWidth: 0.5,
               fillOpacity: 0.3 // Reduced opacity for dark background
+            }),
+            // Add equator line with fixed position (not affected by rotation)
+            Plot.line(equator, {
+              x: d => d[0],
+              y: d => d[1],
+              stroke: "#c19a6b",
+              strokeWidth: 1.5,
+              strokeOpacity: 0.7,
+              strokeDasharray: "5,5" // Dashed line for equator
+            }),
+            // Add equator label on the left side
+            Plot.text(["Equator"], {
+              x: -160, // Position the label on the left side
+              y: 0, // At latitude 0 (the equator)
+              fill: "#c19a6b",
+              fontSize: 12,
+              fontWeight: "bold",
+              dy: -10, // Slight vertical offset
+              stroke: "#21160E", // Dark outline for better visibility
+              strokeWidth: 2,
+              paintOrder: "stroke" // Make sure stroke is behind text
             }),
             Plot.dot(coffeePoints, {
               x: d => d.coordinates[0],
@@ -190,19 +211,12 @@ const filteredData = radarValues.filter((d) =>
   <div class="visualization-description card">
     <h3 class="card-title">Global Coffee Origins</h3>
     <p>
-      We observe the global diversity of coffee production, with samples sourced from over 20 countries. The data shows the geographical spread of coffee cultivation, from traditional producers like Colombia, Ethiopia, and Thailand to regions such as Taiwan and Vietnam. The data shows that most of the coffee is produced near the equator, where the climate is ideal for coffee cultivation. 
+      We observe the global diversity of coffee production, with samples sourced from over 20 countries. The data shows the geographical spread of coffee cultivation, from traditional producers like Colombia, Ethiopia, and Thailand to regions such as Taiwan and Vietnam. The data shows that most of the coffee is produced near the equator, where the climate is ideal for coffee cultivation. Keep in mind that this map does not show what countries export the most coffee but rather where CQI has taken it's samples from. The fact that CQI has offices base in Thailand and Taiwan explains why most of their samples come from those countries.
     </p>
     <span>
-    ${worldView === "orthographic" ? html`<p><em>You can rotate the globe by dragging or switch to a 2D map view using the toggle buttons above.</em></p>`: ""}
     </span>
   </div>
 </div>
-<p>
-  <small>
-    Keep in mind that this map does not show what countries export the most coffee but rather where CQI has taken it's samples from. The fact that CQI has offices base in Thailand and Taiwan explains why most of their samples come from those countries.
-  </small>
-</p>
-
 <div class="card">
 <div>
   <h3 class="card-title">Coffee Quality vs External Factors</h3>
@@ -296,7 +310,7 @@ const filteredData = radarValues.filter((d) =>
   <br/>
 </p>
 <div style="display: flex; align-items: flex-start; gap: 1rem; height: 500px; padding-bottom: 2px;">
-  <div style="flex: 1; display: flex; align-items: center; justify-content: center; height: 100%;">
+  <div style="flex: 1; display: flex; align-items: center; justify-content: center; height: 100%">
     ${radarChart(radarValues.filter(d => 
       selectedCountries.includes(d["Country of Origin"])
     ), {
@@ -331,7 +345,7 @@ A positive value shows that linear relation between 2 parameters e.g. they both 
     </div>
   </div>
 <div style="display: flex; align-items: flex-start; gap: 1rem; height: 500px; padding-bottom: 2px;">
-  <div style="flex: 1; display: flex; align-items: center; justify-content: center; height: 100%;">
+  <div style="flex: 1; display: flex; align-items: center; justify-content: center; height: 100%">
     ${correlationMatrix(radarValues, selectedCorrelationValues)}
   </div>
 </div>

@@ -86,8 +86,38 @@ export function createCategoricalQualityChart(coffeeData) {
       ? groupedData.slice(0, maxCategories) 
       : groupedData;
     
-
-   
+    // Add legend before the plot
+    const legendContainer = document.createElement('div');
+    legendContainer.className = 'boxplot-legend';
+    legendContainer.style.fontSize = '12px';
+    legendContainer.style.color = '#e0d0c1';
+    
+    // Create the legend with a simple, unobtrusive design
+    const legendSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    legendSvg.setAttribute('width', '300');
+    legendSvg.setAttribute('height', '70');
+    
+    const legendItems = `
+            <g transform="translate(0,10)">
+          <rect x="0" y="0" width="30" height="15" fill="#aa6122" fill-opacity="0.7" stroke="#46301e" stroke-width="1"/>
+          <text x="40" y="12" font-size="12" fill="#e0d0c1">
+            Represents the middle 50% of data values
+          </text>
+         
+        </g>
+        <g transform="translate(10,50)">
+          <rect x="10" y="2" width="10" height="10" fill="#f0d6a3" stroke="#46301e" stroke-width="2"/>
+          <text x="40" y="12" font-size="12" fill="#e0d0c1">Median value (hover for details)</text>
+        </g>
+        <g transform="translate(10,30)">
+          <circle cx="15" cy="7" r="2" fill="#f0d6a3" stroke="#46301e" stroke-width="1"/>
+          <text x="40" y="12" font-size="12" fill="#e0d0c1">Individual data points</text>
+        </g>
+    `;
+    
+    legendSvg.innerHTML = legendItems;
+    legendContainer.appendChild(legendSvg);
+    element.appendChild(legendContainer);
     
     // Create the plot
     const plot = Plot.plot({
@@ -122,8 +152,6 @@ export function createCategoricalQualityChart(coffeeData) {
         fontSize: 12
       },
       marks: [
-      
-        
         // Enhanced boxplot without tooltip
         Plot.boxX(processedData, {
           y: d => d[currentParams.categoricalFactor],
@@ -165,14 +193,14 @@ export function createCategoricalQualityChart(coffeeData) {
                    `Median: ${d.median.toFixed(2)}\n` +
                    `Samples: ${d.count}`;
           }
-        }),
+        })
       ],
       caption: `Distribution of ${currentParams.qualityParam} by ${currentParams.categoricalFactor}`
     });
     
     element.appendChild(plot);
     
-    // Add tooltip functionality to truncated labels
+    // Remove the previous legend code here and just keep the tooltip functionality
     setTimeout(() => {
       const yAxisLabels = element.querySelectorAll('.coffee-categorical-chart > figure > svg > g:nth-child(2) text');
       

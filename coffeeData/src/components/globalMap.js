@@ -172,5 +172,17 @@ export default function createGlobalMap(coffeeData, world, Generators) {
     };
   });
 
-  return { worldView, world_point, coffeePoints, getColorForCount };
+  // Generate equator line points (longitude points at latitude 0)
+  const generateEquator = () => {
+    const points = [];
+    // Create points along the equator (longitude from -180 to 180, latitude 0)
+    for (let lon = -180; lon <= 180; lon += 5) {
+      points.push([lon, 0]);
+    }
+    return points;
+  };
+
+  const equator = generateEquator();
+
+  return { worldView, world_point, coffeePoints, getColorForCount, equator };
 }
