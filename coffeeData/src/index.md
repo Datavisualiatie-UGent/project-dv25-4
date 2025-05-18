@@ -221,9 +221,12 @@ const filteredData = radarValues.filter((d) =>
 <div>
   <h3 class="card-title">Coffee Quality vs External Factors</h3>
   <p class="card-paragraph">
-    A cup of coffee can be described by a bunch of different factors like sweetness, acidity, uniformity, … But a question one could ask is, what is the effect of external factors on the flavor profile of the harvested beans. This graph aims to show this relationship. We observe that there is a slight increase in quality parameters as altitude increases, while the quality tends to decrease when the moisture percentage increases.
+    A cup of coffee can be described by a bunch of different factors like sweetness, acidity, uniformity, and more. But a question one could ask is, what is the effect of external factors on the flavor profile of the harvested beans? This graph aims to show this relationship. We observe that there is a slight increase in quality parameters as altitude increases, while the quality tends to decrease when the moisture percentage increases.
     <br/>
-    Simply pick a quality parameter and an external factor and observe the relationship between the 2.
+    Simply pick a quality parameter and an external factor and observe the relationship between the two.
+    <br/>
+    If you want to learn more about what each quality parameter means, visit the <a href="/CQI">CQI page</a>.
+  </p>
   </p>
   <div class="dropdown-container">
     <div class="dropdown-group">
